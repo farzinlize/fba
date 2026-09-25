@@ -8,24 +8,24 @@ from backend.app.admin.schema.user_password_history import CreateUserPasswordHis
 
 
 class CRUDUserPasswordHistory(CRUDPlus[UserPasswordHistory]):
-    """用户密码历史记录数据库操作类"""
+    """User password history database operations"""
 
     async def create(self, db: AsyncSession, obj: CreateUserPasswordHistoryParam) -> None:
         """
-        创建密码历史记录
+        Create password history record
 
-        :param db: 数据库会话
-        :param obj: 创建密码历史记录参数
+        :param db: Database session
+        :param obj: Password history creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def get_by_user_id(self, db: AsyncSession, user_id: int) -> Sequence[UserPasswordHistory]:
         """
-        获取用户的密码历史记录
+        Get user password history
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
+        :param db: Database session
+        :param user_id: User ID
         :return:
         """
         return await self.select_models_order(db, 'id', 'desc', self.model.user_id == user_id)

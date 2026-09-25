@@ -3,12 +3,12 @@ values (2049629108257816576, 'notice.menu', 'PluginNotice', '/plugins/notice', 9
 
 insert into sys_menu (id, title, name, path, sort, icon, type, component, perms, status, display, cache, link, remark, parent_id, created_time, updated_time)
 values
-(2049629108257816577, '新增', 'AddNotice', null, 0, null, 2, null, 'sys:notice:add', 1, 0, 1, '', null, 2049629108257816576, now(), null),
-(2049629108257816578, '修改', 'EditNotice', null, 0, null, 2, null, 'sys:notice:edit', 1, 0, 1, '', null, 2049629108257816576, now(), null),
-(2049629108257816579, '删除', 'DeleteNotice', null, 0, null, 2, null, 'sys:notice:del', 1, 0, 1, '', null, 2049629108257816576, now(), null);
+(2049629108257816577, 'Add', 'AddNotice', null, 0, null, 2, null, 'sys:notice:add', 1, 0, 1, '', null, 2049629108257816576, now(), null),
+(2049629108257816578, 'Edit', 'EditNotice', null, 0, null, 2, null, 'sys:notice:edit', 1, 0, 1, '', null, 2049629108257816576, now(), null),
+(2049629108257816579, 'Delete', 'DeleteNotice', null, 0, null, 2, null, 'sys:notice:del', 1, 0, 1, '', null, 2049629108257816576, now(), null);
 
 insert into sys_notice (id, title, type, status, content, created_time, updated_time)
-values (2112248797756129280, 'hahahahahaahahaha', 0, 1, '你好😄
+values (2112248797756129280, 'hahahahahaahahaha', 0, 1, 'Hello 😄
 
 ```
 print(''fba yyds'')

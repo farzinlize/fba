@@ -13,9 +13,9 @@ T = TypeVar('T')
 @lru_cache(maxsize=128)
 def import_module_cached(module_path: str) -> Any:
     """
-    缓存导入模块
+    Cache imported modules
 
-    :param module_path: 模块路径
+    :param module_path: Module path
     :return:
     """
     return importlib.import_module(module_path)
@@ -23,9 +23,9 @@ def import_module_cached(module_path: str) -> Any:
 
 def get_model_objects(module_path: str) -> list[object] | None:
     """
-    获取模型对象
+    Get model object
 
-    :param module_path: 模块路径
+    :param module_path: Module path
     :return:
     """
     try:
@@ -47,7 +47,7 @@ def get_model_objects(module_path: str) -> list[object] | None:
 
 
 def get_app_models() -> list[object]:
-    """获取 app 所有模型类"""
+    """Get all model classes in an app"""
     from backend.core.path_conf import BASE_PATH
 
     app_path = BASE_PATH / 'app'
@@ -67,7 +67,7 @@ def get_app_models() -> list[object]:
 
 @lru_cache(256)
 def get_all_models() -> tuple[object, ...]:
-    """获取所有模型类"""
+    """Get all model classes"""
     from backend.plugin.core import get_plugin_models
 
     return tuple(get_app_models() + get_plugin_models())

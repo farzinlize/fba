@@ -6,34 +6,34 @@ T = TypeVar('T', bound=Enum)
 
 
 class _EnumBase:
-    """枚举基类，提供通用方法"""
+    """Base enum providing common methods"""
 
     @classmethod
     def get_member_keys(cls) -> list[str]:
-        """获取枚举成员名称列表"""
+        """Get enum member names"""
         return list(cls.__members__.keys())
 
     @classmethod
     def get_member_values(cls) -> list:
-        """获取枚举成员值列表"""
+        """Get enum member values"""
         return [item.value for item in cls.__members__.values()]
 
     @classmethod
     def get_member_dict(cls) -> dict[str, Any]:
-        """获取枚举成员字典"""
+        """Get enum member dictionary"""
         return {name: item.value for name, item in cls.__members__.items()}
 
 
 class IntEnum(_EnumBase, SourceIntEnum):
-    """整型枚举基类"""
+    """Integer enum base class"""
 
 
 class StrEnum(_EnumBase, str, Enum):
-    """字符串枚举基类"""
+    """String enum base class"""
 
 
 class MenuType(IntEnum):
-    """菜单类型"""
+    """Menu type"""
 
     directory = 0
     menu = 1
@@ -43,14 +43,14 @@ class MenuType(IntEnum):
 
 
 class RoleDataRuleOperatorType(IntEnum):
-    """数据规则运算符"""
+    """Data rule operator"""
 
     AND = 0
     OR = 1
 
 
 class RoleDataRuleExpressionType(IntEnum):
-    """数据规则表达式"""
+    """Data rule expression"""
 
     eq = 0  # ==
     ne = 1  # !=
@@ -63,7 +63,7 @@ class RoleDataRuleExpressionType(IntEnum):
 
 
 class MethodType(StrEnum):
-    """HTTP 请求方法"""
+    """HTTP request method"""
 
     GET = 'GET'
     POST = 'POST'
@@ -74,21 +74,21 @@ class MethodType(StrEnum):
 
 
 class LoginLogStatusType(IntEnum):
-    """登录日志状态"""
+    """Login log status"""
 
     fail = 0
     success = 1
 
 
 class BuildTreeType(StrEnum):
-    """构建树形结构类型"""
+    """Tree structure type"""
 
     traversal = 'traversal'
     recursive = 'recursive'
 
 
 class OperaLogCipherType(IntEnum):
-    """操作日志加密类型"""
+    """Operation log encryption type"""
 
     aes = 0
     md5 = 1
@@ -97,21 +97,21 @@ class OperaLogCipherType(IntEnum):
 
 
 class StatusType(IntEnum):
-    """状态类型"""
+    """Status type"""
 
     disable = 0
     enable = 1
 
 
 class FileType(StrEnum):
-    """文件类型"""
+    """File type"""
 
     image = 'image'
     video = 'video'
 
 
 class PluginLevelType(StrEnum):
-    """插件级别类型"""
+    """Plugin level type"""
 
     app = 'app'
     capability = 'capability'
@@ -119,14 +119,14 @@ class PluginLevelType(StrEnum):
 
 
 class PluginType(StrEnum):
-    """插件类型"""
+    """Plugin type"""
 
     zip = 'zip'
     git = 'git'
 
 
 class UserPermissionType(StrEnum):
-    """用户权限类型"""
+    """User permission type"""
 
     superuser = 'superuser'
     staff = 'staff'
@@ -135,21 +135,21 @@ class UserPermissionType(StrEnum):
 
 
 class DataBaseType(StrEnum):
-    """数据库类型"""
+    """Database type"""
 
     mysql = 'mysql'
     postgresql = 'postgresql'
 
 
 class PrimaryKeyType(StrEnum):
-    """主键类型"""
+    """Primary key type"""
 
     autoincrement = 'autoincrement'
     snowflake = 'snowflake'
 
 
 class LifespanStage(IntEnum):
-    """lifespan 执行阶段"""
+    """Lifespan execution phase"""
 
     core = 0
     plugin = 1

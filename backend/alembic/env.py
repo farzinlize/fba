@@ -68,7 +68,7 @@ def run_migrations_offline() -> None:
 
 def do_run_migrations(connection: Connection) -> None:
     def process_revision_directives(context, revision, directives) -> None:  # ruff:ignore[missing-type-function-argument]
-        """当迁移无变化时，不生成迁移记录"""
+        """Do not generate a migration revision when there are no changes"""
         if config.cmd_opts.autogenerate:
             script = directives[0]
             if script.upgrade_ops.is_empty():

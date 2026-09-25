@@ -9,63 +9,65 @@ from backend.core.conf import settings
 
 async def rbac_verify(request: Request, _token: str = DependsJwtAuth) -> None:  # ruff:ignore[complex-structure]
     """
-    RBAC 权限校验（鉴权顺序很重要，谨慎修改）
+    RBAC permission checks (authorization order matters; modify carefully)
 
-    :param request: FastAPI 请求对象
-    :param _token: JWT 令牌
+    :param request: FastAPI request object
+    :param _token: JWT token
     :return:
     """
     path = request.url.path
 
-    # API 鉴权白名单
+    # API authorization allowlist
     if path in settings.TOKEN_REQUEST_PATH_EXCLUDE:
         return
     for pattern in settings.TOKEN_REQUEST_PATH_EXCLUDE_PATTERN:
         if pattern.match(path):
             return
 
-    # JWT 授权状态强制校验
+    # Enforce JWT authentication status validation
     if not request.auth.scopes:
         raise errors.TokenError
 
-    # 超级管理员免校验
+    # Skip validation for superusers
     if request.user.is_superuser:
         return
 
-    # 检测用户角色
+    # Check user roles
     user_roles = request.user.roles
     enabled_roles = [role for role in user_roles if role.status == StatusType.enable]
     if not enabled_roles:
-        raise errors.AuthorizationError(msg='用户所属角色已被锁定，请联系系统管理员')
+        raise errors.AuthorizationError(msg='User role is locked; contact the system administrator')
 
-    # 检测用户所属角色菜单
+    # Check menus assigned to user roles
     if not any(len(role.menus) > 0 for role in enabled_roles):
-        raise errors.AuthorizationError(msg='用户未分配菜单，请联系系统管理员')
+        raise errors.AuthorizationError(msg='No menus assigned to the user; contact the system administrator')
 
-    # 检测后台管理操作权限
+    # Check admin panel operation permissions
     method = request.method
     if method not in {MethodType.GET, MethodType.OPTIONS} and not request.user.is_staff:
-        raise errors.AuthorizationError(msg='用户已被禁止后台管理操作，请联系系统管理员')
+        raise errors.AuthorizationError(
+            msg='User is prohibited from admin panel operations; contact the system administrator'
+        )
 
-    # RBAC 鉴权
+    # RBAC authorization
     if settings.RBAC_ROLE_MENU_MODE:
         path_auth_perm = ctx.permission
 
-        # 没有菜单操作权限标识不校验
+        # Skip validation when no menu operation permission identifier is set
         if not path_auth_perm:
             return
 
-        # 菜单鉴权白名单
+        # Menu authorization allowlist
         if path_auth_perm in settings.RBAC_ROLE_MENU_EXCLUDE:
             return
 
-        # 菜单去重
+        # Deduplicate menus
         unique_menus = {}
         for role in enabled_roles:
             for menu in role.menus:
                 unique_menus[menu.id] = menu
 
-        # 已分配菜单权限校验
+        # Validate assigned menu permissions
         allow_perms = []
         for menu in list(unique_menus.values()):
             if menu.perms and menu.status == StatusType.enable:
@@ -73,14 +75,16 @@ async def rbac_verify(request: Request, _token: str = DependsJwtAuth) -> None:  
         if path_auth_perm not in allow_perms:
             raise errors.AuthorizationError
     else:
-        # casbin 模式
+        # Casbin mode
         try:
             from backend.plugin.casbin_rbac.rbac import casbin_verify
         except ImportError:
-            raise errors.ServerError(msg='Casbin RBAC 插件用法导入失败，请联系系统管理员')
+            raise errors.ServerError(
+                msg='Failed to import Casbin RBAC plugin utilities; contact the system administrator'
+            )
 
         await casbin_verify(request)
 
 
-# RBAC 授权依赖注入
+# RBAC authorization dependency injection
 DependsRBAC = Depends(rbac_verify)

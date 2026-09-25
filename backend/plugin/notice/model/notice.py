@@ -6,12 +6,12 @@ from backend.common.model import Base, UniversalText, id_key
 
 
 class Notice(Base):
-    """系统通知公告表"""
+    """System notice table"""
 
     __tablename__ = 'sys_notice'
 
     id: Mapped[id_key] = mapped_column(init=False)
-    title: Mapped[str] = mapped_column(sa.String(64), comment='标题')
-    type: Mapped[int] = mapped_column(comment='类型（0：通知、1：公告）')
-    status: Mapped[int] = mapped_column(comment='状态（0：隐藏、1：显示）')
-    content: Mapped[str] = mapped_column(UniversalText, comment='内容')
+    title: Mapped[str] = mapped_column(sa.String(64), comment='Title')
+    type: Mapped[int] = mapped_column(comment='Type (0: notification, 1: announcement)')
+    status: Mapped[int] = mapped_column(comment='Status (0: hidden, 1: visible)')
+    content: Mapped[str] = mapped_column(UniversalText, comment='Content')

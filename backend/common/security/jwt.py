@@ -20,9 +20,9 @@ from backend.utils.timezone import timezone
 
 def jwt_encode(payload: dict[str, Any]) -> str:
     """
-    生成 JWT token
+    Generate JWT token
 
-    :param payload: 载荷
+    :param payload: Payload
     :return:
     """
     return jwt.encode(payload, settings.TOKEN_SECRET_KEY, settings.TOKEN_ALGORITHM)
@@ -30,7 +30,7 @@ def jwt_encode(payload: dict[str, Any]) -> str:
 
 def jwt_decode(token: str) -> TokenPayload:
     """
-    解析 JWT token
+    Parse JWT token
 
     :param token: JWT token
     :return:
@@ -46,11 +46,11 @@ def jwt_decode(token: str) -> TokenPayload:
         user_id = payload.get('sub')
         expire = payload.get('exp')
         if not session_uuid or not user_id or not expire:
-            raise errors.TokenError(msg='Token 无效')
+            raise errors.TokenError(msg='Invalid token')
     except ExpiredSignatureError:
-        raise errors.TokenError(msg='Token 已过期')
+        raise errors.TokenError(msg='Token has expired')
     except (JWTError, Exception):
-        raise errors.TokenError(msg='Token 无效')
+        raise errors.TokenError(msg='Invalid token')
     return TokenPayload(
         user_id=int(user_id),
         session_uuid=session_uuid,
@@ -60,35 +60,37 @@ def jwt_decode(token: str) -> TokenPayload:
 
 async def get_current_user(db: AsyncSession, pk: int) -> User:
     """
-    获取当前用户
+    Get current user
 
-    :param db: 数据库会话
-    :param pk: 用户 ID
+    :param db: Database session
+    :param pk: User ID
     :return:
     """
     from backend.app.admin.crud.crud_user import user_dao
 
     user = await user_dao.get_join(db, user_id=pk)
     if not user:
-        raise errors.TokenError(msg='Token 无效')
+        raise errors.TokenError(msg='Invalid token')
     if not user.status:
-        raise errors.AuthorizationError(msg='用户已被锁定，请联系系统管理员')
+        raise errors.AuthorizationError(msg='User is locked; contact the system administrator')
     if user.dept_id and not user.dept:
-        raise errors.AuthorizationError(msg='用户所属部门不存在或已被删除，请联系系统管理员')
+        raise errors.AuthorizationError(
+            msg='User department does not exist or has been deleted; contact the system administrator'
+        )
     if user.dept and not user.dept.status:
-        raise errors.AuthorizationError(msg='用户所属部门已被锁定，请联系系统管理员')
+        raise errors.AuthorizationError(msg='User department is locked; contact the system administrator')
     if user.roles:
         role_status = [role.status for role in user.roles]
         if all(status == 0 for status in role_status):
-            raise errors.AuthorizationError(msg='用户所属角色已被锁定，请联系系统管理员')
+            raise errors.AuthorizationError(msg='User role is locked; contact the system administrator')
     return user
 
 
 async def get_jwt_user(user_id: int) -> GetUserInfoWithRelationDetail:
     """
-    获取 JWT 用户
+    Get JWT user
 
-    :param user_id: 用户 ID
+    :param user_id: User ID
     :return:
     """
     user_key = f'{settings.JWT_USER_REDIS_PREFIX}:{user_id}'
@@ -103,7 +105,7 @@ async def get_jwt_user(user_id: int) -> GetUserInfoWithRelationDetail:
                 ex=settings.TOKEN_EXPIRE_SECONDS,
             )
     else:
-        # TODO: 在恰当的时机，应替换为使用 model_validate_json
+        # TODO: Replace with model_validate_json when appropriate
         # https://docs.pydantic.dev/latest/concepts/json/#partial-json-parsing
         user = GetUserInfoWithRelationDetail.model_validate(from_json(cache_user, allow_partial=True))
     return user
@@ -111,7 +113,7 @@ async def get_jwt_user(user_id: int) -> GetUserInfoWithRelationDetail:
 
 async def jwt_authentication(token: str) -> GetUserInfoWithRelationDetail:
     """
-    JWT 认证
+    JWT authentication
 
     :param token: JWT token
     :return:
@@ -120,9 +122,9 @@ async def jwt_authentication(token: str) -> GetUserInfoWithRelationDetail:
     ctx.user_id = token_payload.user_id
     redis_token = await redis_client.get(f'{settings.TOKEN_REDIS_PREFIX}:{ctx.user_id}:{token_payload.session_uuid}')
     if not redis_token:
-        raise errors.TokenError(msg='Token 已过期')
+        raise errors.TokenError(msg='Token has expired')
     if token != redis_token:
-        raise errors.TokenError(msg='Token 已失效')
+        raise errors.TokenError(msg='Token is no longer valid')
 
     user = await get_jwt_user(ctx.user_id)
     ctx.is_superuser = user.is_superuser
@@ -134,10 +136,10 @@ def jwt_authentication_verify(
     token: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ) -> str:
     """
-    JWT 认证依赖
+    JWT authentication dependency
 
-    :param request: FastAPI 请求对象
-    :param token: HTTP Bearer 认证信息
+    :param request: FastAPI request object
+    :param token: HTTP Bearer authentication credentials
     :return:
     """
     if isinstance(request.user, UnauthenticatedUser):
@@ -147,16 +149,16 @@ def jwt_authentication_verify(
     return token.credentials
 
 
-# JWT 依赖注入
+# JWT dependency injection
 DependsJwtAuth = Depends(jwt_authentication_verify)
 
 
 def superuser_verify(request: Request, _token: str = DependsJwtAuth) -> bool:
     """
-    验证当前用户超级管理员权限
+    Verify that the current user has superuser privileges
 
-    :param request: FastAPI 请求对象
-    :param _token: JWT 令牌
+    :param request: FastAPI request object
+    :param _token: JWT token
     :return:
     """
     if isinstance(request.user, UnauthenticatedUser):
@@ -167,5 +169,5 @@ def superuser_verify(request: Request, _token: str = DependsJwtAuth) -> bool:
     return superuser
 
 
-# 超级管理员鉴权依赖注入
+# Superuser authorization dependency injection
 DependsSuperUser = Depends(superuser_verify)

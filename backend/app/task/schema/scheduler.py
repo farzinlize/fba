@@ -9,42 +9,44 @@ from backend.common.schema import SchemaBase
 
 
 class TaskSchedulerSchemaBase(SchemaBase):
-    """任务调度参数"""
+    """Task schedule parameters"""
 
-    name: str = Field(description='任务名称')
-    task: str = Field(description='要运行的 Celery 任务')
-    args: JsonValue | None = Field(None, description='任务可接收的位置参数')
-    kwargs: JsonValue | None = Field(None, description='任务可接收的关键字参数')
-    queue: str | None = Field(None, description='CELERY_TASK_QUEUES 中定义的队列')
-    exchange: str | None = Field(None, description='低级别 AMQP 路由的交换机')
-    routing_key: str | None = Field(None, description='低级别 AMQP 路由的路由密钥')
-    start_time: datetime | None = Field(None, description='任务开始触发的时间')
-    expire_time: datetime | None = Field(None, description='任务不再触发的截止时间')
-    expire_seconds: int | None = Field(None, description='任务不再触发的秒数时间差')
-    type: TaskSchedulerType = Field(description='任务调度类型（0间隔 1定时）')
-    interval_every: int | None = Field(None, description='任务再次运行前的间隔周期数')
-    interval_period: PeriodType | None = Field(None, description='任务运行之间的周期类型')
-    crontab: str = Field(default='* * * * *', description='Crontab 表达式')
-    one_off: bool = Field(default=False, description='是否仅运行一次')
-    remark: str | None = Field(None, description='备注')
+    name: str = Field(description='Task name')
+    task: str = Field(description='Celery task to run')
+    args: JsonValue | None = Field(None, description='Positional arguments accepted by the task')
+    kwargs: JsonValue | None = Field(None, description='Keyword arguments accepted by the task')
+    queue: str | None = Field(None, description='Queue defined in CELERY_TASK_QUEUES')
+    exchange: str | None = Field(None, description='Exchange for low-level AMQP routing')
+    routing_key: str | None = Field(None, description='Routing key for low-level AMQP routing')
+    start_time: datetime | None = Field(None, description='Time at which the task starts triggering')
+    expire_time: datetime | None = Field(None, description='Deadline after which the task stops triggering')
+    expire_seconds: int | None = Field(
+        None, description='Time interval in seconds after which the task stops triggering'
+    )
+    type: TaskSchedulerType = Field(description='Task schedule type (0: interval, 1: cron)')
+    interval_every: int | None = Field(None, description='Number of periods between task runs')
+    interval_period: PeriodType | None = Field(None, description='Type of period between task runs')
+    crontab: str = Field(default='* * * * *', description='Crontab expression')
+    one_off: bool = Field(default=False, description='Run only once')
+    remark: str | None = Field(None, description='Notes')
 
 
 class CreateTaskSchedulerParam(TaskSchedulerSchemaBase):
-    """创建任务调度参数"""
+    """Task schedule creation parameters"""
 
 
 class UpdateTaskSchedulerParam(TaskSchedulerSchemaBase):
-    """更新任务调度参数"""
+    """Task schedule update parameters"""
 
 
 class GetTaskSchedulerDetail(TaskSchedulerSchemaBase):
-    """任务调度详情"""
+    """Task schedule details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(description='任务调度 ID')
-    status: StatusType = Field(description='状态')
-    total_run_count: int = Field(description='已运行总次数')
-    last_run_time: datetime | None = Field(None, description='最后运行时间')
-    created_time: datetime = Field(description='创建时间')
-    updated_time: datetime | None = Field(None, description='更新时间')
+    id: int = Field(description='Task schedule ID')
+    status: StatusType = Field(description='Status')
+    total_run_count: int = Field(description='Total run count')
+    last_run_time: datetime | None = Field(None, description='Last run time')
+    created_time: datetime = Field(description='Creation time')
+    updated_time: datetime | None = Field(None, description='Update time')

@@ -9,7 +9,7 @@ from backend.common.log import log
 
 
 def timer(func) -> Callable:  # ruff:ignore[missing-type-function-argument]
-    """函数耗时计时装饰器"""
+    """Function duration timing decorator"""
 
     @functools.wraps(func)
     async def async_wrapper(*args, **kwargs) -> Any:
@@ -28,7 +28,7 @@ def timer(func) -> Callable:  # ruff:ignore[missing-type-function-argument]
         return result
 
     def _log_time(func, elapsed: float) -> None:  # ruff:ignore[missing-type-function-argument]
-        # 智能选择单位（秒、毫秒、微秒、纳秒）
+        # Automatically select units (seconds, milliseconds, microseconds, nanoseconds)
         if elapsed >= 1:
             unit, factor = 's', 1
         else:

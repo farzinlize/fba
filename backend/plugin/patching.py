@@ -9,12 +9,12 @@ def replace_middleware(
     **replacement_kwargs,
 ) -> None:
     """
-    替换中间件（应在插件的 setup hook 中调用）
+    Replace middleware (call from the plugin setup hook)
 
-    :param app: FastAPI 应用实例
-    :param original_middleware_cls: 原始中间件类
-    :param replacement_middleware_cls: 替换后的中间件类
-    :param replacement_kwargs: 传给替换后中间件的初始化参数
+    :param app: FastAPI application instance
+    :param original_middleware_cls: Original middleware class
+    :param replacement_middleware_cls: Replacement middleware class
+    :param replacement_kwargs: Initialization arguments for the replacement middleware
     :return:
     """
     for index, middleware in enumerate(app.user_middleware):

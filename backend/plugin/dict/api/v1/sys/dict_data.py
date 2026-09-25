@@ -19,25 +19,25 @@ from backend.plugin.dict.service.dict_data_service import dict_data_service
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有字典数据', dependencies=[DependsJwtAuth])
+@router.get('/all', summary='Get all dictionary entries', dependencies=[DependsJwtAuth])
 async def get_all_dict_datas(db: CurrentSession) -> ResponseSchemaModel[list[GetDictDataDetail]]:
     data = await dict_data_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取字典数据详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='Get dictionary entry details', dependencies=[DependsJwtAuth])
 async def get_dict_data(
     db: CurrentSession,
-    pk: Annotated[int, Path(description='字典数据 ID')],
+    pk: Annotated[int, Path(description='Dictionary entry ID')],
 ) -> ResponseSchemaModel[GetDictDataDetail]:
     data = await dict_data_service.get(db=db, pk=pk)
     return response_base.success(data=data)
 
 
-@router.get('/type-codes/{code}', summary='获取字典数据列表', dependencies=[DependsJwtAuth])
+@router.get('/type-codes/{code}', summary='Get dictionary entry list', dependencies=[DependsJwtAuth])
 async def get_dict_data_by_type_code(
     db: CurrentSession,
-    code: Annotated[str, Path(description='字典类型编码')],
+    code: Annotated[str, Path(description='Dictionary type code')],
 ) -> ResponseSchemaModel[list[GetDictDataDetail]]:
     data = await dict_data_service.get_by_type_code(db=db, code=code)
     return response_base.success(data=data)
@@ -45,7 +45,7 @@ async def get_dict_data_by_type_code(
 
 @router.get(
     '',
-    summary='分页获取所有字典数据',
+    summary='Get all dictionary entries with pagination',
     dependencies=[
         DependsJwtAuth,
         DependsPagination,
@@ -53,11 +53,11 @@ async def get_dict_data_by_type_code(
 )
 async def get_dict_datas_paginated(
     db: CurrentSession,
-    type_code: Annotated[str | None, Query(description='字典类型编码')] = None,
-    label: Annotated[str | None, Query(description='字典数据标签')] = None,
-    value: Annotated[str | None, Query(description='字典数据键值')] = None,
-    status: Annotated[int | None, Query(description='状态')] = None,
-    type_id: Annotated[int | None, Query(description='字典类型 ID')] = None,
+    type_code: Annotated[str | None, Query(description='Dictionary type code')] = None,
+    label: Annotated[str | None, Query(description='Dictionary entry label')] = None,
+    value: Annotated[str | None, Query(description='Dictionary entry value')] = None,
+    status: Annotated[int | None, Query(description='Status')] = None,
+    type_id: Annotated[int | None, Query(description='Dictionary type ID')] = None,
 ) -> ResponseSchemaModel[PageData[GetDictDataDetail]]:
     page_data = await dict_data_service.get_list(
         db=db,
@@ -72,7 +72,7 @@ async def get_dict_datas_paginated(
 
 @router.post(
     '',
-    summary='创建字典数据',
+    summary='Create dictionary entry',
     dependencies=[
         Depends(RequestPermission('dict:data:add')),
         DependsRBAC,
@@ -85,7 +85,7 @@ async def create_dict_data(db: CurrentSessionTransaction, obj: CreateDictDataPar
 
 @router.put(
     '/{pk}',
-    summary='更新字典数据',
+    summary='Update dictionary entry',
     dependencies=[
         Depends(RequestPermission('dict:data:edit')),
         DependsRBAC,
@@ -93,7 +93,7 @@ async def create_dict_data(db: CurrentSessionTransaction, obj: CreateDictDataPar
 )
 async def update_dict_data(
     db: CurrentSessionTransaction,
-    pk: Annotated[int, Path(description='字典数据 ID')],
+    pk: Annotated[int, Path(description='Dictionary entry ID')],
     obj: UpdateDictDataParam,
 ) -> ResponseModel:
     count = await dict_data_service.update(db=db, pk=pk, obj=obj)
@@ -104,7 +104,7 @@ async def update_dict_data(
 
 @router.delete(
     '',
-    summary='批量删除字典数据',
+    summary='Delete dictionary entries in bulk',
     dependencies=[
         Depends(RequestPermission('dict:data:del')),
         DependsRBAC,

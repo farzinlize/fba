@@ -9,16 +9,16 @@ from backend.utils.timezone import timezone
 
 
 class UserPasswordHistory(DataClassBase):
-    """用户密码历史记录表"""
+    """User password history table"""
 
     __tablename__ = 'sys_user_password_history'
 
     id: Mapped[id_key] = mapped_column(init=False)
-    user_id: Mapped[int] = mapped_column(sa.BigInteger, index=True, comment='用户 ID')
-    password: Mapped[str] = mapped_column(sa.String(256), comment='历史密码')
+    user_id: Mapped[int] = mapped_column(sa.BigInteger, index=True, comment='User ID')
+    password: Mapped[str] = mapped_column(sa.String(256), comment='Previous password')
     created_time: Mapped[datetime] = mapped_column(
         TimeZone,
         init=False,
         default_factory=timezone.now,
-        comment='创建时间',
+        comment='Creation time',
     )

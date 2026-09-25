@@ -1,14 +1,14 @@
 # ============================================================================
-# Tempo 配置文件
-# Tempo 是 Grafana 的高性能、低成本分布式链路追踪后端
-# 官方文档: https://grafana.com/docs/tempo/next/configuration/
+# Tempo configuration
+# Tempo is the Grafana high-performance, low-cost distributed tracing backend
+# Official documentation: https://grafana.com/docs/tempo/next/configuration/
 # ============================================================================
 
-# HTTP 服务器配置
+# HTTP server configuration
 server:
   http_listen_port: 3200
 
-# 分发器配置
+# Distributor configuration
 distributor:
   receivers:
     otlp:
@@ -18,7 +18,7 @@ distributor:
         http:
           endpoint: "0.0.0.0:4318"
 
-# 指标生成器配置
+# Metrics generator configuration
 metrics_generator:
   registry:
     external_labels:
@@ -41,7 +41,7 @@ metrics_generator:
         - http.target
         - http.status_code
 
-# 存储配置
+# Storage configuration
 storage:
   trace:
     backend: local
@@ -50,7 +50,7 @@ storage:
     local:
       path: /tmp/tempo/blocks
 
-# 覆盖配置
+# Override configuration
 overrides:
   defaults:
     metrics_generator:

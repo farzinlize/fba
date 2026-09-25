@@ -1,7 +1,7 @@
 [plugin]
-summary = "通知公告"
+summary = "Notices and announcements"
 version = "0.0.2"
-description = "用于发布系统内部通知、公告"
+description = "Publish internal system notifications and announcements"
 author = "wu-clan"
 tags = ["other"]
 database = ["mysql", "postgresql"]
@@ -11,4 +11,4 @@ extend = "admin"
 
 [api.notice]
 prefix = "/notices"
-tags = "系统通知公告"
+tags = "System notices and announcements"

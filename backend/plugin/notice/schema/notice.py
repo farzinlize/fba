@@ -8,33 +8,33 @@ from backend.plugin.notice.enums import NoticeType
 
 
 class NoticeSchemaBase(SchemaBase):
-    """通知公告基础模型"""
+    """Notice base schema"""
 
-    title: str = Field(description='标题')
-    type: NoticeType = Field(description='类型（0：通知、1：公告）')
-    status: StatusType = Field(description='状态（0：隐藏、1：显示）')
-    content: str = Field(description='内容')
+    title: str = Field(description='Title')
+    type: NoticeType = Field(description='Type (0: notification, 1: announcement)')
+    status: StatusType = Field(description='Status (0: hidden, 1: visible)')
+    content: str = Field(description='Content')
 
 
 class CreateNoticeParam(NoticeSchemaBase):
-    """创建通知公告参数"""
+    """Notice creation parameters"""
 
 
 class UpdateNoticeParam(NoticeSchemaBase):
-    """更新通知公告参数"""
+    """Notice update parameters"""
 
 
 class DeleteNoticeParam(SchemaBase):
-    """删除通知公告参数"""
+    """Notice deletion parameters"""
 
-    pks: list[int] = Field(description='通知公告 ID 列表')
+    pks: list[int] = Field(description='Notice ID list')
 
 
 class GetNoticeDetail(NoticeSchemaBase):
-    """通知公告详情"""
+    """Notice details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(description='通知公告 ID')
-    created_time: datetime = Field(description='创建时间')
-    updated_time: datetime | None = Field(None, description='更新时间')
+    id: int = Field(description='Notice ID')
+    created_time: datetime = Field(description='Creation time')
+    updated_time: datetime | None = Field(None, description='Update time')

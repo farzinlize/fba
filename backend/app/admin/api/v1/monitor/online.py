@@ -19,9 +19,9 @@ if TYPE_CHECKING:
 router = APIRouter()
 
 
-@router.get('', summary='获取在线用户', dependencies=[DependsSuperUser])
+@router.get('', summary='Get online users', dependencies=[DependsSuperUser])
 async def get_sessions(  # ruff:ignore[complex-structure]
-    username: Annotated[str | None, Query(description='用户名')] = None,
+    username: Annotated[str | None, Query(description='Username')] = None,
 ) -> ResponseSchemaModel[list[GetTokenDetail]]:
     users_key = f'{settings.TOKEN_SESSION_REDIS_PREFIX}:users'
     user_ids = list(await redis_client.smembers(users_key))
@@ -91,14 +91,14 @@ async def get_sessions(  # ruff:ignore[complex-structure]
             GetTokenDetail(
                 id=token_payload.user_id,
                 session_uuid=token_payload.session_uuid,
-                username=info.get('username', '未知'),
-                nickname=info.get('nickname', '未知'),
-                ip=info.get('ip', '未知'),
-                os=info.get('os', '未知'),
-                browser=info.get('browser', '未知'),
-                device=info.get('device', '未知'),
+                username=info.get('username', 'Unknown'),
+                nickname=info.get('nickname', 'Unknown'),
+                ip=info.get('ip', 'Unknown'),
+                os=info.get('os', 'Unknown'),
+                browser=info.get('browser', 'Unknown'),
+                device=info.get('device', 'Unknown'),
                 status=StatusType.enable if token_payload.session_uuid in online_sessions else StatusType.disable,
-                last_login_time=info.get('last_login_time', '未知'),
+                last_login_time=info.get('last_login_time', 'Unknown'),
                 expire_time=token_payload.expire_time,
             )
         )
@@ -108,12 +108,12 @@ async def get_sessions(  # ruff:ignore[complex-structure]
 
 @router.delete(
     '/{pk}',
-    summary='强制下线',
+    summary='Force logout',
     dependencies=[DependsSuperUser],
 )
 async def delete_session(
-    pk: Annotated[int, Path(description='用户 ID')],
-    session_uuid: Annotated[str, Query(description='会话 UUID')],
+    pk: Annotated[int, Path(description='User ID')],
+    session_uuid: Annotated[str, Query(description='Session UUID')],
 ) -> ResponseModel:
     await revoke_token(pk, session_uuid)
     return response_base.success()

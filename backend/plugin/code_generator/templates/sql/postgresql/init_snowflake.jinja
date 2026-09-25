@@ -3,7 +3,7 @@ values ({{ parent_menu_id }}, '{{ doc_comment }}', '{{ schema_name }}', '/{{ app
 
 insert into sys_menu (id, title, name, path, sort, icon, type, component, perms, status, display, cache, link, remark, parent_id, created_time, updated_time)
 values
-({{ button_ids[0] }}, '新增', 'Add{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:add', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null),
-({{ button_ids[1] }}, '修改', 'Edit{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:edit', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null),
-({{ button_ids[2] }}, '删除', 'Delete{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:del', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null),
-({{ button_ids[3] }}, '查询', 'Get{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:get', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null);
+({{ button_ids[0] }}, 'Add', 'Add{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:add', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null),
+({{ button_ids[1] }}, 'Edit', 'Edit{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:edit', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null),
+({{ button_ids[2] }}, 'Delete', 'Delete{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:del', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null),
+({{ button_ids[3] }}, 'Query', 'Get{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:get', 1, 0, 1, '', null, {{ parent_menu_id }}, now(), null);

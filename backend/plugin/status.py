@@ -14,9 +14,9 @@ from backend.plugin.errors import PluginInjectError
 
 async def repair_plugin_cache(plugin: str) -> str:
     """
-    修复丢失的插件状态缓存
+    Restore missing plugin status cache
 
-    :param plugin: 插件名称
+    :param plugin: Plugin name
     :return:
     """
     from backend.plugin.core import load_plugin_config
@@ -33,10 +33,10 @@ async def repair_plugin_cache(plugin: str) -> str:
 
 def get_plugin_enable(plugin_info: str | None, default_status: int) -> str:
     """
-    解析插件启用状态
+    Parse plugin enabled status
 
-    :param plugin_info: 插件缓存信息
-    :param default_status: 默认状态值
+    :param plugin_info: Cached plugin information
+    :param default_status: Default status value
     :return:
     """
     if not plugin_info:
@@ -49,22 +49,22 @@ def get_plugin_enable(plugin_info: str | None, default_status: int) -> str:
 
 
 class PluginStatusChecker:
-    """插件状态检查器"""
+    """Plugin status checker"""
 
     def __init__(self, plugin: str) -> None:
         """
-        初始化插件状态检查器
+        Initialize plugin status checker
 
-        :param plugin: 插件名称
+        :param plugin: Plugin name
         :return:
         """
         self.plugin = plugin
 
     async def __call__(self, request: Request) -> None:
         """
-        验证插件状态
+        Validate plugin status
 
-        :param request: FastAPI 请求对象
+        :param request: FastAPI request object
         :return:
         """
         plugin_info = cast(
@@ -72,12 +72,14 @@ class PluginStatusChecker:
             await redis_client.get(f'{settings.PLUGIN_REDIS_PREFIX}:{self.plugin}'),
         )
         if not plugin_info:
-            log.warning('插件 {} 状态未初始化或丢失，尝试自动修复', self.plugin)
+            log.warning('Plugin {} status is uninitialized or missing; attempting automatic recovery', self.plugin)
             try:
                 plugin_info = await repair_plugin_cache(self.plugin)
             except Exception as e:
-                log.exception('插件 {} 状态自动修复失败', self.plugin)
-                raise PluginInjectError('插件状态未初始化或丢失，请联系系统管理员') from e
+                log.exception('Automatic status recovery failed for plugin {}', self.plugin)
+                raise PluginInjectError(
+                    'Plugin status is uninitialized or missing; contact the system administrator'
+                ) from e
 
         if get_plugin_enable(plugin_info, StatusType.disable.value) != str(StatusType.enable.value):
-            raise errors.ServerError(msg=f'插件 {self.plugin} 未启用，请联系系统管理员')
+            raise errors.ServerError(msg=f'Plugin {self.plugin} is disabled; contact the system administrator')

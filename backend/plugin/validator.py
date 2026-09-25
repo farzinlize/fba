@@ -8,18 +8,18 @@ from backend.core.path_conf import PLUGIN_DIR
 from backend.plugin.errors import PluginConfigError
 from backend.utils.pattern_validate import match_string
 
-# 支持的标签类型
+# Supported tag types
 _VALID_TAGS: Final = frozenset({'ai', 'mcp', 'agent', 'auth', 'storage', 'notification', 'task', 'payment', 'other'})
 
-# 支持的数据库类型
+# Supported database types
 _VALID_DATABASES: Final = frozenset({'mysql', 'postgresql'})
 
 
 def _validate_settings(v: dict[str, Any]) -> dict[str, Any]:
-    """校验插件配置项名称和值类型"""
+    """Validate plugin setting names and value types"""
     invalid_keys = [key for key in v if not key.isupper()]
     if invalid_keys:
-        raise PluginConfigError(f'settings 配置项名称必须全大写，无效的配置项: {", ".join(invalid_keys)}')
+        raise PluginConfigError(f'Setting names must be uppercase; invalid settings: {", ".join(invalid_keys)}')
 
     invalid_values = [
         key
@@ -29,146 +29,151 @@ def _validate_settings(v: dict[str, Any]) -> dict[str, Any]:
     ]
     if invalid_values:
         raise PluginConfigError(
-            f'settings 配置项值仅支持字符串、数字、布尔值或字符串列表，无效的配置项: {", ".join(invalid_values)}'
+            f'Setting values must be strings, numbers, booleans, or lists of strings; invalid '
+            f'settings: {", ".join(invalid_values)}'
         )
     return v
 
 
 class PluginInfoSchema(BaseModel):
-    """插件信息模型"""
+    """Plugin information model"""
 
-    icon: str | None = Field(None, description='图标路径或链接地址')
-    summary: str = Field(..., min_length=1, max_length=100, description='摘要')
-    version: str = Field(..., description='版本号')
-    description: str = Field(..., min_length=1, max_length=500, description='描述')
-    author: str = Field(..., min_length=1, max_length=50, description='作者')
-    tags: list[str] = Field(..., min_length=1, description='标签')
-    database: list[str] = Field(..., min_length=1, description='数据库支持')
-    depends_on: list[str] = Field(default_factory=list, description='依赖的插件列表')
+    icon: str | None = Field(None, description='Icon path or URL')
+    summary: str = Field(..., min_length=1, max_length=100, description='Summary')
+    version: str = Field(..., description='Version number')
+    description: str = Field(..., min_length=1, max_length=500, description='Description')
+    author: str = Field(..., min_length=1, max_length=50, description='Author')
+    tags: list[str] = Field(..., min_length=1, description='Tags')
+    database: list[str] = Field(..., min_length=1, description='Database support')
+    depends_on: list[str] = Field(default_factory=list, description='List of plugin dependencies')
 
     @field_validator('version')
     @classmethod
     def validate_version(cls, v: str) -> str:
-        """校验版本号格式"""
+        """Validate version number format"""
         if not match_string(r'^\d+\.\d+\.\d+$', v):
-            raise PluginConfigError(f'版本号格式错误，应为 x.y.z 格式，如 1.0.0，当前值: {v}')
+            raise PluginConfigError(f'Invalid version format; expected x.y.z, such as 1.0.0; current value: {v}')
         return v
 
     @field_validator('tags')
     @classmethod
     def validate_tags(cls, v: list[str]) -> list[str]:
-        """校验标签"""
+        """Validate tags"""
         if v:
             invalid_tags = set(v) - _VALID_TAGS
             if invalid_tags:
                 raise PluginConfigError(
-                    f'标签值无效: {", ".join(invalid_tags)}，支持的标签: {", ".join(sorted(_VALID_TAGS))}'
+                    f'Invalid tags: {", ".join(invalid_tags)}; supported tags: {", ".join(sorted(_VALID_TAGS))}'
                 )
         return v
 
     @field_validator('database')
     @classmethod
     def validate_database(cls, v: list[str]) -> list[str]:
-        """校验数据库类型"""
+        """Validate database types"""
         if v:
             invalid_dbs = set(v) - _VALID_DATABASES
             if invalid_dbs:
                 raise PluginConfigError(
-                    f'数据库类型无效: {", ".join(invalid_dbs)}，支持的数据库: {", ".join(sorted(_VALID_DATABASES))}'
+                    f'Invalid database types: {", ".join(invalid_dbs)}; supported databases: '
+                    f'{", ".join(sorted(_VALID_DATABASES))}'
                 )
         return v
 
     @field_validator('depends_on')
     @classmethod
     def validate_depends_on(cls, v: list[str]) -> list[str]:
-        """校验插件依赖配置"""
+        """Validate plugin dependencies"""
         for dep in v:
             if not dep or not isinstance(dep, str):
-                raise PluginConfigError(f'依赖的插件列表必须为非空字符串，当前值: {dep}')
+                raise PluginConfigError(f'Plugin dependencies must be nonempty strings; current value: {dep}')
         return v
 
 
 class CapabilityPluginInfoSchema(PluginInfoSchema):
-    """能力型插件信息模型"""
+    """Capability plugin information model"""
 
-    database: list[str] = Field(default_factory=list, description='数据库支持')
+    database: list[str] = Field(default_factory=list, description='Database support')
 
 
 class AppPluginAppSchema(BaseModel):
-    """应用级插件 app 配置模型"""
+    """Application-level plugin app configuration model"""
 
-    router: list[str] = Field(..., min_length=1, description='路由器实例列表')
+    router: list[str] = Field(..., min_length=1, description='List of router instances')
 
     @field_validator('router')
     @classmethod
     def validate_router(cls, v: list[str]) -> list[str]:
-        """校验路由器配置"""
+        """Validate router configuration"""
         if not v:
-            raise PluginConfigError('router 配置不能为空')
+            raise PluginConfigError('router configuration must not be empty')
         for router in v:
             if not router or not isinstance(router, str):
-                raise PluginConfigError(f'router 配置项必须为非空字符串，当前值: {router}')
+                raise PluginConfigError(f'router entries must be nonempty strings; current value: {router}')
         return v
 
 
 class ExtendPluginAppSchema(BaseModel):
-    """扩展级插件 app 配置模型"""
+    """Extension-level plugin app configuration model"""
 
-    extend: str = Field(..., min_length=1, description='扩展的应用文件夹名称')
+    extend: str = Field(..., min_length=1, description='Name of the application folder to extend')
 
 
 class ApiConfigSchema(BaseModel):
-    """API 配置模型"""
+    """API configuration model"""
 
-    prefix: str = Field(..., min_length=1, description='路由前缀')
-    tags: str = Field(..., min_length=1, description='Swagger 文档标签')
+    prefix: str = Field(..., min_length=1, description='Route prefix')
+    tags: str = Field(..., min_length=1, description='Swagger documentation tags')
 
     @field_validator('prefix')
     @classmethod
     def validate_prefix(cls, v: str) -> str:
-        """校验路由前缀"""
+        """Validate route prefix"""
         if not v.startswith('/'):
-            raise PluginConfigError(f'路由前缀必须以 "/" 开头，当前值: {v}')
+            raise PluginConfigError(f'Route prefix must start with "/"; current value: {v}')
         if not match_string(r'^/[a-zA-Z0-9_/-]*$', v):
-            raise PluginConfigError(f'路由前缀格式错误，只能包含字母、数字、下划线、斜杠和连字符，当前值: {v}')
+            raise PluginConfigError(
+                f'Route prefix may only contain letters, digits, underscores, slashes, and hyphens; current value: {v}'
+            )
         return v
 
 
 class AppPluginConfigSchema(BaseModel):
-    """应用级插件配置模型"""
+    """Application-level plugin configuration model"""
 
-    plugin: PluginInfoSchema = Field(..., description='插件信息')
-    app: AppPluginAppSchema = Field(..., description='应用配置')
-    settings: dict[str, Any] = Field(default_factory=dict, description='配置项')
+    plugin: PluginInfoSchema = Field(..., description='Plugin information')
+    app: AppPluginAppSchema = Field(..., description='Application configuration')
+    settings: dict[str, Any] = Field(default_factory=dict, description='Settings')
 
     @field_validator('settings')
     @classmethod
     def validate_settings(cls, v: dict[str, Any]) -> dict[str, Any]:
-        """校验配置项"""
+        """Validate settings"""
         return _validate_settings(v)
 
 
 class ExtendPluginConfigSchema(BaseModel):
-    """扩展级插件配置模型"""
+    """Extension-level plugin configuration model"""
 
-    plugin: PluginInfoSchema = Field(..., description='插件信息')
-    app: ExtendPluginAppSchema = Field(..., description='应用配置')
-    api: dict[str, ApiConfigSchema] = Field(..., min_length=1, description='接口配置')
-    settings: dict[str, Any] = Field(default_factory=dict, description='配置项')
+    plugin: PluginInfoSchema = Field(..., description='Plugin information')
+    app: ExtendPluginAppSchema = Field(..., description='Application configuration')
+    api: dict[str, ApiConfigSchema] = Field(..., min_length=1, description='API configuration')
+    settings: dict[str, Any] = Field(default_factory=dict, description='Settings')
 
     @field_validator('api', mode='before')
     @classmethod
     def validate_api_config(cls, v: dict[str, Any]) -> dict[str, ApiConfigSchema]:
-        """校验并转换 API 配置"""
+        """Validate and convert API configuration"""
         if not v:
-            raise PluginConfigError('扩展级插件必须包含至少一个 api 配置')
+            raise PluginConfigError('Extension-level plugins must include at least one API configuration')
         validated_api = {}
         for api_name, api_config in v.items():
             if not api_name or not isinstance(api_name, str):
-                raise PluginConfigError(f'api 配置名称必须为非空字符串，当前值: {api_name}')
+                raise PluginConfigError(f'API configuration names must be nonempty strings; current value: {api_name}')
             if not match_string(r'^[a-zA-Z_][a-zA-Z0-9_]*$', api_name):
                 raise PluginConfigError(
-                    f'api 配置名称格式错误，必须以字母或下划线开头，只能包含字母、数字和下划线，当前值: {api_name}'
+                    f'API configuration names must start with a letter or underscore and contain only '
+                    f'letters, digits, and underscores; current value: {api_name}'
                 )
             validated_api[api_name] = ApiConfigSchema(**api_config) if isinstance(api_config, dict) else api_config
         return validated_api
@@ -176,31 +181,31 @@ class ExtendPluginConfigSchema(BaseModel):
     @field_validator('settings')
     @classmethod
     def validate_settings(cls, v: dict[str, Any]) -> dict[str, Any]:
-        """校验配置项"""
+        """Validate settings"""
         return _validate_settings(v)
 
 
 class CapabilityPluginConfigSchema(BaseModel):
-    """能力型插件配置模型"""
+    """Capability plugin configuration model"""
 
     model_config = ConfigDict(extra='forbid')
 
-    plugin: CapabilityPluginInfoSchema = Field(..., description='插件信息')
-    settings: dict[str, Any] = Field(default_factory=dict, description='配置项')
+    plugin: CapabilityPluginInfoSchema = Field(..., description='Plugin information')
+    settings: dict[str, Any] = Field(default_factory=dict, description='Settings')
 
     @field_validator('settings')
     @classmethod
     def validate_settings(cls, v: dict[str, Any]) -> dict[str, Any]:
-        """校验配置项"""
+        """Validate settings"""
         return _validate_settings(v)
 
 
 def validate_plugin_config(plugin_name: str, config: dict[str, Any]) -> PluginLevelType:
     """
-    校验插件配置
+    Validate plugin configuration
 
-    :param plugin_name: 插件名称
-    :param config: 插件配置字典
+    :param plugin_name: Plugin name
+    :param config: Plugin configuration dictionary
     :return:
     """
     plugin_schema, plugin_level = (
@@ -215,7 +220,7 @@ def validate_plugin_config(plugin_name: str, config: dict[str, Any]) -> PluginLe
         plugin_schema.model_validate(config)
     except Exception as e:
         error_msg = str(e)
-        # 格式化 Pydantic 错误信息
+        # Format Pydantic error messages
         if hasattr(e, 'errors'):
             errors = e.errors()
             error_details = []
@@ -224,17 +229,19 @@ def validate_plugin_config(plugin_name: str, config: dict[str, Any]) -> PluginLe
                 msg = error['msg']
                 error_details.append(f'{loc}: {msg}')
             error_msg = '; '.join(error_details)
-        raise PluginConfigError(f'插件 {plugin_name} 配置校验失败: {error_msg}') from e
+        raise PluginConfigError(f'Configuration validation failed for plugin {plugin_name}: {error_msg}') from e
 
     depends_on = config['plugin'].get('depends_on', [])
     if plugin_name in depends_on:
-        raise PluginConfigError(f'插件 {plugin_name} 不能依赖自身')
+        raise PluginConfigError(f'Plugin {plugin_name} cannot depend on itself')
 
     plugin_dir = Path(PLUGIN_DIR) / plugin_name
     model_dir = plugin_dir / 'model'
     if model_dir.is_dir():
         if not config['plugin'].get('database'):
-            raise PluginConfigError(f'插件 {plugin_name} 包含 model 目录时必须声明支持的数据库')
+            raise PluginConfigError(
+                f'Plugin {plugin_name} must declare supported databases when it includes a model directory'
+            )
 
         sql_dir = plugin_dir / 'sql'
         supported_db_types = []
@@ -260,8 +267,8 @@ def validate_plugin_config(plugin_name: str, config: dict[str, Any]) -> PluginLe
 
         if not supported_db_types:
             raise PluginConfigError(
-                f'插件 {plugin_name} 必须至少提供一种数据库的初始化和销毁 SQL 脚本，'
-                f'当前缺失: {"; ".join(missing_details)}'
+                f'Plugin {plugin_name} must provide initialization and teardown SQL scripts for at '
+                f'least one database; missing: {"; ".join(missing_details)}'
             )
 
     return plugin_level

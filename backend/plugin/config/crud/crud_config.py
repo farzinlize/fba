@@ -10,24 +10,24 @@ from backend.utils.timezone import timezone
 
 
 class CRUDConfig(CRUDPlus[Config]):
-    """系统参数参数配置数据库操作类"""
+    """System configuration parameter database operations"""
 
     async def get(self, db: AsyncSession, pk: int) -> Config | None:
         """
-        获取参数配置详情
+        Get configuration parameter details
 
-        :param db: 数据库会话
-        :param pk: 参数配置 ID
+        :param db: Database session
+        :param pk: Configuration parameter ID
         :return:
         """
         return await self.select_model_by_column(db, id=pk, deleted=0)
 
     async def get_all(self, db: AsyncSession, type: str | None) -> Sequence[Config | None]:
         """
-        通过键名获取参数配置
+        Get configuration parameter by key
 
-        :param db: 数据库会话
-        :param type: 参数配置类型
+        :param db: Database session
+        :param type: Configuration parameter type
         :return:
         """
         filters = {'deleted': 0}
@@ -39,40 +39,40 @@ class CRUDConfig(CRUDPlus[Config]):
 
     async def get_all_by_ids(self, db: AsyncSession, pks: list[int]) -> Sequence[Config]:
         """
-        通过 ID 列表批量获取参数配置
+        Get configuration parameters in bulk by ID list
 
-        :param db: 数据库会话
-        :param pks: 参数配置 ID 列表
+        :param db: Database session
+        :param pks: Configuration parameter ID list
         :return:
         """
         return await self.select_models(db, id__in=pks, deleted=0)
 
     async def get_all_by_keys(self, db: AsyncSession, keys: list[str]) -> Sequence[Config]:
         """
-        通过键名列表批量获取参数配置
+        Get configuration parameters in bulk by key list
 
-        :param db: 数据库会话
-        :param keys: 参数配置键名列表
+        :param db: Database session
+        :param keys: Configuration parameter key list
         :return:
         """
         return await self.select_models(db, key__in=keys, deleted=0)
 
     async def get_by_key(self, db: AsyncSession, key: str) -> Config | None:
         """
-        通过键名获取参数配置
+        Get configuration parameter by key
 
-        :param db: 数据库会话
-        :param key: 参数配置键名
+        :param db: Database session
+        :param key: Configuration parameter key
         :return:
         """
         return await self.select_model_by_column(db, key=key, deleted=0)
 
     async def get_select(self, name: str | None, type: str | None) -> Select:
         """
-        获取参数配置列表查询表达式
+        Get the query expression for the configuration parameter list
 
-        :param name: 参数配置名称
-        :param type: 参数配置类型
+        :param name: Configuration parameter name
+        :param type: Configuration parameter type
         :return:
         """
         filters = {'deleted': 0}
@@ -86,41 +86,41 @@ class CRUDConfig(CRUDPlus[Config]):
 
     async def create(self, db: AsyncSession, obj: CreateConfigParam) -> None:
         """
-        创建参数配置
+        Create configuration parameter
 
-        :param db: 数据库会话
-        :param obj: 创建参数配置参数
+        :param db: Database session
+        :param obj: Configuration parameter creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, pk: int, obj: UpdateConfigParam) -> int:
         """
-        更新参数配置
+        Update configuration parameter
 
-        :param db: 数据库会话
-        :param pk: 参数配置 ID
-        :param obj: 更新参数配置参数
+        :param db: Database session
+        :param pk: Configuration parameter ID
+        :param obj: Configuration parameter update parameters
         :return:
         """
         return await self.update_model_by_column(db, obj, id=pk, deleted=0)
 
     async def bulk_update(self, db: AsyncSession, objs: list[UpdateConfigParam]) -> int:
         """
-        批量更新参数配置
+        Update configuration parameters in bulk
 
-        :param db: 数据库会话
-        :param objs: 批量更新参数配置参数
+        :param db: Database session
+        :param objs: Bulk configuration parameter update parameters
         :return:
         """
         return await self.bulk_update_models(db, objs)
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
         """
-        批量删除参数配置
+        Delete configuration parameters in bulk
 
-        :param db: 数据库会话
-        :param pks: 参数配置 ID 列表
+        :param db: Database session
+        :param pks: Configuration parameter ID list
         :return:
         """
         return await self.delete_model_by_column(

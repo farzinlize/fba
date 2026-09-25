@@ -12,24 +12,24 @@ from backend.utils.timezone import timezone
 
 
 class CRUDDept(CRUDPlus[Dept]):
-    """部门数据库操作类"""
+    """Department database operations"""
 
     async def get(self, db: AsyncSession, dept_id: int) -> Dept | None:
         """
-        获取部门详情
+        Get department details
 
-        :param db: 数据库会话
-        :param dept_id: 部门 ID
+        :param db: Database session
+        :param dept_id: Department ID
         :return:
         """
         return await self.select_model_by_column(db, id=dept_id, deleted=0)
 
     async def get_by_name(self, db: AsyncSession, name: str) -> Dept | None:
         """
-        通过名称获取部门
+        Get department by name
 
-        :param db: 数据库会话
-        :param name: 部门名称
+        :param db: Database session
+        :param name: Department name
         :return:
         """
         return await self.select_model_by_column(db, name=name, deleted=0)
@@ -44,14 +44,14 @@ class CRUDDept(CRUDPlus[Dept]):
         status: int | None,
     ) -> Sequence[Dept]:
         """
-        获取所有部门
+        Get all departments
 
-        :param db: 数据库会话
-        :param data_filter: 请求用户
-        :param name: 部门名称
-        :param leader: 负责人
-        :param phone: 联系电话
-        :param status: 部门状态
+        :param db: Database session
+        :param data_filter: Requesting user
+        :param name: Department name
+        :param leader: Manager
+        :param phone: Contact phone number
+        :param status: Department status
         :return:
         """
         filters = {'deleted': 0}
@@ -69,31 +69,31 @@ class CRUDDept(CRUDPlus[Dept]):
 
     async def create(self, db: AsyncSession, obj: CreateDeptParam) -> None:
         """
-        创建部门
+        Create department
 
-        :param db: 数据库会话
-        :param obj: 创建部门参数
+        :param db: Database session
+        :param obj: Department creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, dept_id: int, obj: UpdateDeptParam) -> int:
         """
-        更新部门
+        Update department
 
-        :param db: 数据库会话
-        :param dept_id: 部门 ID
-        :param obj: 更新部门参数
+        :param db: Database session
+        :param dept_id: Department ID
+        :param obj: Department update parameters
         :return:
         """
         return await self.update_model_by_column(db, obj, id=dept_id, deleted=0)
 
     async def delete(self, db: AsyncSession, dept_id: int) -> int:
         """
-        删除部门
+        Delete department
 
-        :param db: 数据库会话
-        :param dept_id: 部门 ID
+        :param db: Database session
+        :param dept_id: Department ID
         :return:
         """
         return await self.delete_model_by_column(
@@ -109,10 +109,10 @@ class CRUDDept(CRUDPlus[Dept]):
 
     async def get_join(self, db: AsyncSession, dept_id: int) -> Any | None:
         """
-        获取部门及关联数据
+        Get department and related data
 
-        :param db: 数据库会话
-        :param dept_id: 部门 ID
+        :param db: Database session
+        :param dept_id: Department ID
         :return:
         """
         result = await self.select_model(
@@ -131,10 +131,10 @@ class CRUDDept(CRUDPlus[Dept]):
 
     async def get_children(self, db: AsyncSession, dept_id: int) -> Sequence[Dept | None]:
         """
-        获取子部门列表
+        Get child departments
 
-        :param db: 数据库会话
-        :param dept_id: 部门 ID
+        :param db: Database session
+        :param dept_id: Department ID
         :return:
         """
         return await self.select_models(db, parent_id=dept_id, deleted=0)

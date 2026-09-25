@@ -12,15 +12,15 @@ from backend.core.path_conf import PLUGIN_DIR
 
 
 class PluginSettingsSource(PydanticBaseSettingsSource):
-    """从所有插件的 plugin.toml 加载配置的自定义配置源"""
+    """Custom settings source loading configuration from all plugin.toml files"""
 
     def get_field_value(self, field: FieldInfo, field_name: str) -> tuple[Any, str, bool]:
-        """获取单个字段的值"""
-        # 不在这里实现，使用 __call__ 批量加载
+        """Get the value of a single field"""
+        # Not implemented here; use __call__ to load in bulk
         return None, field_name, False
 
     def __call__(self) -> dict[str, Any]:
-        """加载所有插件配置"""
+        """Load all plugin configurations"""
         merged_settings: dict[str, Any] = {}
 
         for item in os.listdir(PLUGIN_DIR):

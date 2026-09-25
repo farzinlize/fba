@@ -9,7 +9,7 @@ from backend.database.db import get_db, get_db_transaction
 from backend.main import app
 from backend.tests.utils.db import override_get_db, override_get_db_transaction
 
-# 重载数据库
+# Reload database
 app.dependency_overrides[get_db] = override_get_db
 app.dependency_overrides[get_db_transaction] = override_get_db_transaction
 

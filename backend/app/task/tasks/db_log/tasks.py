@@ -7,7 +7,7 @@ from backend.database.db import async_db_session
 
 @shared_task
 async def delete_db_opera_log() -> str:
-    """自动删除数据库操作日志"""
+    """Automatically delete database operation logs"""
     async with async_db_session.begin() as db:
         await opera_log_service.delete_all(db=db)
         return 'Success'
@@ -15,7 +15,7 @@ async def delete_db_opera_log() -> str:
 
 @shared_task
 async def delete_db_login_log() -> str:
-    """自动删除数据库登录日志"""
+    """Automatically delete database login logs"""
     async with async_db_session.begin() as db:
         await login_log_service.delete_all(db=db)
         return 'Success'

@@ -21,25 +21,25 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有数据范围', dependencies=[DependsJwtAuth])
+@router.get('/all', summary='Get all data scopes', dependencies=[DependsJwtAuth])
 async def get_all_data_scope(db: CurrentSession) -> ResponseSchemaModel[list[GetDataScopeDetail]]:
     data = await data_scope_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取数据范围详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='Get data scope details', dependencies=[DependsJwtAuth])
 async def get_data_scope(
     db: CurrentSession,
-    pk: Annotated[int, Path(description='数据范围 ID')],
+    pk: Annotated[int, Path(description='Data scope ID')],
 ) -> ResponseSchemaModel[GetDataScopeDetail]:
     data = await data_scope_service.get(db=db, pk=pk)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}/rules', summary='获取数据范围所有规则', dependencies=[DependsJwtAuth])
+@router.get('/{pk}/rules', summary='Get all rules for a data scope', dependencies=[DependsJwtAuth])
 async def get_data_scope_rules(
     db: CurrentSession,
-    pk: Annotated[int, Path(description='数据范围 ID')],
+    pk: Annotated[int, Path(description='Data scope ID')],
 ) -> ResponseSchemaModel[GetDataScopeWithRelationDetail]:
     data = await data_scope_service.get_rules(db=db, pk=pk)
     return response_base.success(data=data)
@@ -47,7 +47,7 @@ async def get_data_scope_rules(
 
 @router.get(
     '',
-    summary='分页获取所有数据范围',
+    summary='Get all data scopes with pagination',
     dependencies=[
         DependsJwtAuth,
         DependsPagination,
@@ -55,8 +55,8 @@ async def get_data_scope_rules(
 )
 async def get_data_scopes_paginated(
     db: CurrentSession,
-    name: Annotated[str | None, Query(description='范围名称')] = None,
-    status: Annotated[int | None, Query(description='状态')] = None,
+    name: Annotated[str | None, Query(description='Scope name')] = None,
+    status: Annotated[int | None, Query(description='Status')] = None,
 ) -> ResponseSchemaModel[PageData[GetDataScopeDetail]]:
     page_data = await data_scope_service.get_list(db=db, name=name, status=status)
     return response_base.success(data=page_data)
@@ -64,7 +64,7 @@ async def get_data_scopes_paginated(
 
 @router.post(
     '',
-    summary='创建数据范围',
+    summary='Create data scope',
     dependencies=[
         Depends(RequestPermission('data:scope:add')),
         DependsRBAC,
@@ -77,7 +77,7 @@ async def create_data_scope(db: CurrentSessionTransaction, obj: CreateDataScopeP
 
 @router.put(
     '/{pk}',
-    summary='更新数据范围',
+    summary='Update data scope',
     dependencies=[
         Depends(RequestPermission('data:scope:edit')),
         DependsRBAC,
@@ -85,7 +85,7 @@ async def create_data_scope(db: CurrentSessionTransaction, obj: CreateDataScopeP
 )
 async def update_data_scope(
     db: CurrentSessionTransaction,
-    pk: Annotated[int, Path(description='数据范围 ID')],
+    pk: Annotated[int, Path(description='Data scope ID')],
     obj: UpdateDataScopeParam,
 ) -> ResponseModel:
     count = await data_scope_service.update(db=db, pk=pk, obj=obj)
@@ -96,7 +96,7 @@ async def update_data_scope(
 
 @router.put(
     '/{pk}/rules',
-    summary='更新数据范围规则',
+    summary='Update data scope rules',
     dependencies=[
         Depends(RequestPermission('data:scope:rule:edit')),
         DependsRBAC,
@@ -104,7 +104,7 @@ async def update_data_scope(
 )
 async def update_data_scope_rules(
     db: CurrentSessionTransaction,
-    pk: Annotated[int, Path(description='数据范围 ID')],
+    pk: Annotated[int, Path(description='Data scope ID')],
     rule_ids: UpdateDataScopeRuleParam,
 ) -> ResponseModel:
     count = await data_scope_service.update_data_scope_rule(db=db, pk=pk, rule_ids=rule_ids)
@@ -115,7 +115,7 @@ async def update_data_scope_rules(
 
 @router.delete(
     '',
-    summary='批量删除数据范围',
+    summary='Delete data scopes in bulk',
     dependencies=[
         Depends(RequestPermission('data:scope:del')),
         DependsRBAC,

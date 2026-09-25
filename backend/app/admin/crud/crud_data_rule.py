@@ -10,23 +10,23 @@ from backend.utils.timezone import timezone
 
 
 class CRUDDataRule(CRUDPlus[DataRule]):
-    """数据规则数据库操作类"""
+    """Data rule database operations"""
 
     async def get(self, db: AsyncSession, pk: int) -> DataRule | None:
         """
-        获取规则详情
+        Get rule details
 
-        :param db: 数据库会话
-        :param pk: 规则 ID
+        :param db: Database session
+        :param pk: Rule ID
         :return:
         """
         return await self.select_model(db, pk, deleted=0)
 
     async def get_select(self, name: str | None) -> Select:
         """
-        获取规则列表查询表达式
+        Get the query expression for the rule list
 
-        :param name: 规则名称
+        :param name: Rule name
         :return:
         """
         filters = {'deleted': 0}
@@ -38,60 +38,60 @@ class CRUDDataRule(CRUDPlus[DataRule]):
 
     async def get_by_name(self, db: AsyncSession, name: str) -> DataRule | None:
         """
-        通过名称获取规则
+        Get rule by name
 
-        :param db: 数据库会话
-        :param name: 规则名称
+        :param db: Database session
+        :param name: Rule name
         :return:
         """
         return await self.select_model_by_column(db, name=name, deleted=0)
 
     async def get_all(self, db: AsyncSession) -> Sequence[DataRule]:
         """
-        获取所有规则
+        Get all rules
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         return await self.select_models(db, deleted=0)
 
     async def get_all_by_ids(self, db: AsyncSession, pks: list[int]) -> Sequence[DataRule]:
         """
-        通过 ID 列表批量获取数据规则
+        Get data rules in bulk by ID list
 
-        :param db: 数据库会话
-        :param pks: 规则 ID 列表
+        :param db: Database session
+        :param pks: Rule ID list
         :return:
         """
         return await self.select_models(db, id__in=pks, deleted=0)
 
     async def create(self, db: AsyncSession, obj: CreateDataRuleParam) -> None:
         """
-        创建规则
+        Create rule
 
-        :param db: 数据库会话
-        :param obj: 创建规则参数
+        :param db: Database session
+        :param obj: Rule creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, pk: int, obj: UpdateDataRuleParam) -> int:
         """
-        更新规则
+        Update rule
 
-        :param db: 数据库会话
-        :param pk: 规则 ID
-        :param obj: 更新规则参数
+        :param db: Database session
+        :param pk: Rule ID
+        :param obj: Rule update parameters
         :return:
         """
         return await self.update_model_by_column(db, obj, id=pk, deleted=0)
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
         """
-        批量删除规则
+        Delete rules in bulk
 
-        :param db: 数据库会话
-        :param pks: 规则 ID 列表
+        :param db: Database session
+        :param pks: Rule ID list
         :return:
         """
         return await self.delete_model_by_column(

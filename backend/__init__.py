@@ -4,7 +4,7 @@ from backend.utils.dynamic_import import get_all_models
 
 
 def _register_model_globals() -> None:
-    """导入所有模型并注册到 backend 模块命名空间"""
+    """Import all models and register them in the backend module namespace"""
     for model_obj in get_all_models():
         model_name = model_obj.name if isinstance(model_obj, sa.Table) else model_obj.__name__
         if model_name not in globals():

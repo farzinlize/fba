@@ -11,7 +11,7 @@ T = TypeVar('T')
 
 
 class _TaskRunner:
-    """在后台线程上运行 asyncio 事件循环的任务运行器"""
+    """Task runner executing an asyncio event loop in a background thread"""
 
     def __init__(self) -> None:
         self.__loop: asyncio.AbstractEventLoop | None = None
@@ -20,7 +20,7 @@ class _TaskRunner:
         atexit.register(self.close)
 
     def close(self) -> None:
-        """关闭事件循环并清理"""
+        """Close the event loop and clean up"""
         with self.__lock:
             if self.__loop:
                 self.__loop.call_soon_threadsafe(self.__loop.stop)
@@ -32,14 +32,14 @@ class _TaskRunner:
             _runner_map.pop(name, None)
 
     def _target(self) -> None:
-        """后台线程的目标函数"""
+        """Target function for the background thread"""
         try:
             self.__loop.run_forever()
         finally:
             self.__loop.close()
 
     def run(self, coro: Awaitable[T]) -> T:
-        """在后台事件循环上运行协程并返回其结果"""
+        """Run a coroutine on the background event loop and return its result"""
         with self.__lock:
             name = f'TaskRunner-{threading.get_ident()}'
             if self.__loop is None:
@@ -54,7 +54,7 @@ _runner_map = weakref.WeakValueDictionary()
 
 
 def run_await(coro: Callable[..., Awaitable[T]] | Callable[..., Coroutine[Any, Any, T]]) -> Callable[..., T]:
-    """将协程包装在函数中，直到它执行完为止"""
+    """Wrap a coroutine in a function that waits for it to complete"""
 
     @wraps(coro)
     def wrapped(*args, **kwargs):  # ruff:ignore[missing-return-type-private-function]
@@ -63,14 +63,14 @@ def run_await(coro: Callable[..., Awaitable[T]] | Callable[..., Coroutine[Any, A
             raise TypeError(f'Expected coroutine or future, got {type(inner)}')
 
         try:
-            # 如果事件循环正在运行，则使用任务调用
+            # Use task submission if the event loop is running
             asyncio.get_running_loop()
             name = f'TaskRunner-{threading.get_ident()}'
             if name not in _runner_map:
                 _runner_map[name] = _TaskRunner()
             return _runner_map[name].run(inner)
         except RuntimeError:
-            # 如果没有，则创建一个新的事件循环
+            # Otherwise create a new event loop
             try:
                 loop = asyncio.get_event_loop()
             except RuntimeError:

@@ -10,42 +10,42 @@ from backend.utils.timezone import timezone
 
 
 class CRUDCodeGenBusiness(CRUDPlus[CodeGenBusiness]):
-    """代码生成业务 CRUD 类"""
+    """Code generation business CRUD operations"""
 
     async def get(self, db: AsyncSession, pk: int) -> CodeGenBusiness | None:
         """
-        获取代码生成业务
+        Get code generation business definition
 
-        :param db: 数据库会话
-        :param pk: 代码生成业务 ID
+        :param db: Database session
+        :param pk: Code generation business ID
         :return:
         """
         return await self.select_model(db, pk, deleted=0)
 
     async def get_by_name(self, db: AsyncSession, name: str) -> CodeGenBusiness | None:
         """
-        通过 name 获取代码生成业务
+        Get code generation business definition by name
 
-        :param db: 数据库会话
-        :param name: 表名
+        :param db: Database session
+        :param name: Table name
         :return:
         """
         return await self.select_model_by_column(db, table_name=name, deleted=0)
 
     async def get_all(self, db: AsyncSession) -> Sequence[CodeGenBusiness]:
         """
-        获取所有代码生成业务
+        Get all code generation business definitions
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         return await self.select_models(db, deleted=0)
 
     async def get_select(self, table_name: str | None) -> Select:
         """
-        获取所有代码生成业务查询表达式
+        Get query expression for all code generation business definitions
 
-        :param table_name: 业务表名
+        :param table_name: Business table name
         :return:
         """
         filters = {'deleted': 0}
@@ -57,31 +57,31 @@ class CRUDCodeGenBusiness(CRUDPlus[CodeGenBusiness]):
 
     async def create(self, db: AsyncSession, obj: CreateCodeGenBusinessParam) -> None:
         """
-        创建代码生成业务
+        Create code generation business definition
 
-        :param db: 数据库会话
-        :param obj: 创建代码生成业务参数
+        :param db: Database session
+        :param obj: Code generation business creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, pk: int, obj: UpdateCodeGenBusinessParam) -> int:
         """
-        更新代码生成业务
+        Update code generation business definition
 
-        :param db: 数据库会话
-        :param pk: 代码生成业务 ID
-        :param obj: 更新代码生成业务参数
+        :param db: Database session
+        :param pk: Code generation business ID
+        :param obj: Code generation business update parameters
         :return:
         """
         return await self.update_model_by_column(db, obj, id=pk, deleted=0)
 
     async def delete(self, db: AsyncSession, pk: int) -> int:
         """
-        删除代码生成业务
+        Delete code generation business definition
 
-        :param db: 数据库会话
-        :param pk: 代码生成业务 ID
+        :param db: Database session
+        :param pk: Code generation business ID
         :return:
         """
         return await self.delete_model_by_column(

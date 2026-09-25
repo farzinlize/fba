@@ -1,10 +1,10 @@
 class PluginConfigError(Exception):
-    """插件信息错误"""
+    """Plugin information error"""
 
 
 class PluginInjectError(Exception):
-    """插件注入错误"""
+    """Plugin injection error"""
 
 
 class PluginInstallError(Exception):
-    """插件安装错误"""
+    """Plugin installation error"""

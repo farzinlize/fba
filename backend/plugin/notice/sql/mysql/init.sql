@@ -7,12 +7,12 @@ set @notice_menu_id = LAST_INSERT_ID();
 
 insert into sys_menu (title, name, path, sort, icon, type, component, perms, status, display, cache, link, remark, parent_id, created_time, updated_time)
 values
-('新增', 'AddNotice', null, 0, null, 2, null, 'sys:notice:add', 1, 0, 1, '', null, @notice_menu_id, now(), null),
-('修改', 'EditNotice', null, 0, null, 2, null, 'sys:notice:edit', 1, 0, 1, '', null, @notice_menu_id, now(), null),
-('删除', 'DeleteNotice', null, 0, null, 2, null, 'sys:notice:del', 1, 0, 1, '', null, @notice_menu_id, now(), null);
+('Add', 'AddNotice', null, 0, null, 2, null, 'sys:notice:add', 1, 0, 1, '', null, @notice_menu_id, now(), null),
+('Edit', 'EditNotice', null, 0, null, 2, null, 'sys:notice:edit', 1, 0, 1, '', null, @notice_menu_id, now(), null),
+('Delete', 'DeleteNotice', null, 0, null, 2, null, 'sys:notice:del', 1, 0, 1, '', null, @notice_menu_id, now(), null);
 
 insert into sys_notice (id, title, type, status, content, created_time, updated_time)
-values (1, 'hahahahahaahahaha', 0, 1, '你好😄
+values (1, 'hahahahahaahahaha', 0, 1, 'Hello 😄
 
 ```
 print(''fba yyds'')

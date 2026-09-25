@@ -27,9 +27,9 @@ from backend.database.redis import redis_client
 
 def init_resource(service_name: str) -> Resource:
     """
-    初始化资源
+    Initialize resources
 
-    :param service_name: 服务名称
+    :param service_name: Service name
     :return:
     """
     from backend import __version__
@@ -45,9 +45,9 @@ def init_resource(service_name: str) -> Resource:
 
 def init_tracer(resource: Resource) -> None:
     """
-    初始化追踪器
+    Initialize tracer
 
-    :param resource: 遥测资源
+    :param resource: Telemetry resource
     :return:
     """
     provider = TracerProvider(resource=resource)
@@ -60,9 +60,9 @@ def init_tracer(resource: Resource) -> None:
 
 def init_metrics(resource: Resource) -> None:
     """
-    初始化指标
+    Initialize metrics
 
-    :param resource: 遥测资源
+    :param resource: Telemetry resource
     :return:
     """
     exporter = OTLPMetricExporter(endpoint=settings.GRAFANA_OTLP_GRPC_ENDPOINT, insecure=True)
@@ -74,9 +74,9 @@ def init_metrics(resource: Resource) -> None:
 
 def init_logging(resource: Resource) -> None:
     """
-    初始化日志
+    Initialize logging
 
-    :param resource: 遥测资源
+    :param resource: Telemetry resource
     :return:
     """
     provider = LoggerProvider(resource=resource)
@@ -97,9 +97,9 @@ def init_logging(resource: Resource) -> None:
 
 def init_otel(app: FastAPI) -> None:
     """
-    初始化 OpenTelemetry
+    Initialize OpenTelemetry
 
-    :param app: FastAPI 应用实例
+    :param app: FastAPI application instance
     :return:
     """
     resource = init_resource(settings.GRAFANA_PROMETHEUS_APP_NAME)
@@ -107,14 +107,14 @@ def init_otel(app: FastAPI) -> None:
     init_metrics(resource)
     init_logging(resource)
 
-    # Redis 原生指标
+    # Native Redis metrics
     redis_otel = get_observability_instance()
     redis_otel.init(OTelConfig())
 
     AsyncioInstrumentor().instrument()
     HTTPXClientInstrumentor().instrument()
-    # 禁止自动将 OTel handler 安装到 stdlib root logger，
-    # 避免与上面注册的 LoggingHandler（loguru sink）重复推送。
+    # Do not automatically install the OTel handler on the standard library root logger,
+    # which would duplicate exports from the LoggingHandler registered above as a Loguru sink.
     LoggingInstrumentor().instrument(set_logging_format=True, enable_log_auto_instrumentation=False)
     RedisInstrumentor.instrument_client(client=redis_client)  # type: ignore
     for engine in get_database_engines().values():

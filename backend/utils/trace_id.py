@@ -9,19 +9,19 @@ from backend.core.conf import settings
 
 
 def get_request_trace_id() -> str:
-    """从上下文中获取追踪 ID"""
+    """Get trace ID from context"""
     if ctx.exists():
         return ctx.get(settings.TRACE_ID_REQUEST_HEADER_KEY, settings.TRACE_ID_LOG_DEFAULT_VALUE)
     return settings.TRACE_ID_LOG_DEFAULT_VALUE
 
 
 class OtelTraceIdPlugin(Plugin):
-    """OpenTelemetry Trace ID 插件"""
+    """OpenTelemetry Trace ID plugin"""
 
     key = settings.TRACE_ID_REQUEST_HEADER_KEY
 
     async def process_request(self, request: Request) -> Any:
-        """从 OpenTelemetry span 中提取 trace_id"""
+        """Extract trace_id from an OpenTelemetry span"""
         span = trace.get_current_span()
         span_ctx = span.get_span_context()
 

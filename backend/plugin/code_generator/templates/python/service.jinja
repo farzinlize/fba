@@ -10,28 +10,28 @@ from backend.common.pagination import paging_data
 
 
 class {{ class_name }}Service:
-    """{{ doc_comment }}服务类"""
+    """{{ doc_comment }} service"""
 
     @staticmethod
     async def get(*, db: AsyncSession, pk: int) -> {{ class_name }}:
         """
-        获取{{ doc_comment }}
+        Get {{ doc_comment }}
 
-        :param db: 数据库会话
+        :param db: Database session
         :param pk: {{ doc_comment }} ID
         :return:
         """
         {{ table_name }} = await {{ table_name }}_dao.get(db, pk)
         if not {{ table_name }}:
-            raise errors.NotFoundError(msg='{{ doc_comment }}不存在')
+            raise errors.NotFoundError(msg='{{ doc_comment }} does not exist')
         return {{ table_name }}
 
     @staticmethod
     async def get_list(*, db: AsyncSession) -> dict[str, Any]:
         """
-        获取{{ doc_comment }}列表
+        Get {{ doc_comment }} list
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         {{ table_name }}_select = await {{ table_name }}_dao.get_select()
@@ -40,9 +40,9 @@ class {{ class_name }}Service:
     @staticmethod
     async def get_all(*, db: AsyncSession) -> Sequence[{{ class_name }}]:
         """
-        获取所有{{ doc_comment }}
+        Get all {{ doc_comment }}
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         {{ table_name }}s = await {{ table_name }}_dao.get_all(db)
@@ -51,10 +51,10 @@ class {{ class_name }}Service:
     @staticmethod
     async def create(*, db: AsyncSession, obj: Create{{ schema_name }}Param) -> None:
         """
-        创建{{ doc_comment }}
+        Create {{ doc_comment }}
 
-        :param db: 数据库会话
-        :param obj: 创建{{ doc_comment }}参数
+        :param db: Database session
+        :param obj: {{ doc_comment }} creation parameters
         :return:
         """
         await {{ table_name }}_dao.create(db, obj)
@@ -62,11 +62,11 @@ class {{ class_name }}Service:
     @staticmethod
     async def update(*, db: AsyncSession, pk: int, obj: Update{{ schema_name }}Param) -> int:
         """
-        更新{{ doc_comment }}
+        Update {{ doc_comment }}
 
-        :param db: 数据库会话
+        :param db: Database session
         :param pk: {{ doc_comment }} ID
-        :param obj: 更新{{ doc_comment }}参数
+        :param obj: {{ doc_comment }} update parameters
         :return:
         """
         count = await {{ table_name }}_dao.update(db, pk, obj)
@@ -75,10 +75,10 @@ class {{ class_name }}Service:
     @staticmethod
     async def delete(*, db: AsyncSession, obj: Delete{{ schema_name }}Param) -> int:
         """
-        删除{{ doc_comment }}
+        Delete {{ doc_comment }}
 
-        :param db: 数据库会话
-        :param obj: {{ doc_comment }} ID 列表
+        :param db: Database session
+        :param obj: {{ doc_comment }} ID list
         :return:
         """
         count = await {{ table_name }}_dao.delete(db, obj.pks)

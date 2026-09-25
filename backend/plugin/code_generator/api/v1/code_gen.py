@@ -15,10 +15,10 @@ from backend.plugin.code_generator.service.code_gen_service import code_gen_serv
 router = APIRouter()
 
 
-@router.get('/tables', summary='获取数据库表')
+@router.get('/tables', summary='Get database tables')
 async def get_all_tables(
     db: CurrentSession,
-    table_schema: Annotated[str, Query(description='数据库名')] = 'fba',
+    table_schema: Annotated[str, Query(description='Database name')] = 'fba',
 ) -> ResponseSchemaModel[list[dict[str, str | None]]]:
     data = await code_gen_service.get_tables(db=db, table_schema=table_schema)
     return response_base.success(data=data)
@@ -26,7 +26,7 @@ async def get_all_tables(
 
 @router.post(
     '/imports',
-    summary='导入代码生成业务和模型列（仅开发环境）',
+    summary='Import code generation business definitions and model columns (development only)',
     dependencies=[
         Depends(RequestPermission('codegen:table:import')),
         DependsRBAC,
@@ -37,17 +37,17 @@ async def import_table(db: CurrentSessionTransaction, obj: ImportParam) -> Respo
     return response_base.success()
 
 
-@router.get('/{pk}/preview', summary='代码生成预览', dependencies=[DependsJwtAuth])
+@router.get('/{pk}/preview', summary='Preview code generation', dependencies=[DependsJwtAuth])
 async def preview_code(
-    db: CurrentSession, pk: Annotated[int, Path(description='业务 ID')]
+    db: CurrentSession, pk: Annotated[int, Path(description='Business definition ID')]
 ) -> ResponseSchemaModel[dict[str, bytes]]:
     data = await code_gen_service.preview(db=db, pk=pk)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}/paths', summary='获取代码生成路径', dependencies=[DependsJwtAuth])
+@router.get('/{pk}/paths', summary='Get code generation output path', dependencies=[DependsJwtAuth])
 async def get_generate_paths(
-    db: CurrentSession, pk: Annotated[int, Path(description='业务 ID')]
+    db: CurrentSession, pk: Annotated[int, Path(description='Business definition ID')]
 ) -> ResponseSchemaModel[list[str]]:
     data = await code_gen_service.get_generate_path(db=db, pk=pk)
     return response_base.success(data=data)
@@ -55,20 +55,22 @@ async def get_generate_paths(
 
 @router.post(
     '/{pk}',
-    summary='代码生成',
-    description='文件磁盘写入，请谨慎操作（仅开发环境）',
+    summary='Code generation',
+    description='Writes files to disk; use with care (development only)',
     dependencies=[
         Depends(RequestPermission('codegen:local:write')),
         DependsRBAC,
     ],
 )
-async def generate_code(db: CurrentSession, pk: Annotated[int, Path(description='业务 ID')]) -> ResponseModel:
+async def generate_code(
+    db: CurrentSession, pk: Annotated[int, Path(description='Business definition ID')]
+) -> ResponseModel:
     await code_gen_service.generate(db=db, pk=pk)
     return response_base.success()
 
 
-@router.get('/{pk}', summary='下载代码', dependencies=[DependsJwtAuth])
-async def download_code(db: CurrentSession, pk: Annotated[int, Path(description='业务 ID')]):  # ruff:ignore[missing-return-type-undocumented-public-function]
+@router.get('/{pk}', summary='Download code', dependencies=[DependsJwtAuth])
+async def download_code(db: CurrentSession, pk: Annotated[int, Path(description='Business definition ID')]):  # ruff:ignore[missing-return-type-undocumented-public-function]
     bio = await code_gen_service.download(db=db, pk=pk)
     return StreamingResponse(
         bio,

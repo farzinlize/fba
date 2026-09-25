@@ -8,28 +8,28 @@ from backend.database.redis import RedisCli, redis_client
 
 
 class CachePubSubManager:
-    """缓存 Pub/Sub 管理器"""
+    """Cache Pub/Sub manager"""
 
     _pubsub_task: asyncio.Task | None = None
 
     @staticmethod
     async def publish_invalidation(cache_key: str, *, delete_by_prefix: bool) -> None:
         """
-        发布缓存失效通知
+        Publish cache invalidation notification
 
-        :param cache_key: 缓存键
-        :param delete_by_prefix: 是否删除符合前缀的所有缓存
+        :param cache_key: Cache key
+        :param delete_by_prefix: Whether to delete all cache entries matching the prefix
         :return:
         """
         try:
             message = json.dumps({'cache_key': cache_key, 'delete_by_prefix': delete_by_prefix})
             await redis_client.publish(settings.CACHE_PUBSUB_CHANNEL, message)
         except Exception as e:
-            log.warning(f'[CachePubSub] 发布通知失败: {e}')
+            log.warning(f'[CachePubSub] Failed to publish notification: {e}')
 
     @staticmethod
     async def subscribe_and_listen() -> None:  # ruff:ignore[complex-structure]
-        """订阅并监听缓存失效通知"""
+        """Subscribe to and listen for cache invalidation notifications"""
         reconnect_attempts = 0
 
         while reconnect_attempts < settings.CACHE_PUBSUB_MAX_RECONNECT_ATTEMPTS:
@@ -37,16 +37,16 @@ class CachePubSubManager:
             pubsub = None
 
             try:
-                # 使用独立连接
+                # Use a dedicated connection
                 pubsub_client = RedisCli(max_connections=1)
                 pubsub = pubsub_client.pubsub()
                 await pubsub.subscribe(settings.CACHE_PUBSUB_CHANNEL)
 
-                # 发布订阅成功
+                # Subscription successful
                 reconnect_attempts = 0
 
-                # 带超时轮询而不是 listen()，每次进入读取都会触发健康检查 PING，
-                # 避免连接被静默断开后协程永久挂起
+                # Poll with a timeout instead of listen(); each read triggers a health-check PING,
+                # preventing the coroutine from hanging indefinitely after a silent disconnection
                 while True:
                     message = await pubsub.get_message(
                         ignore_subscribe_messages=True,
@@ -62,20 +62,21 @@ class CachePubSubManager:
                         else:
                             local_cache_manager.delete_by_prefix(cache_key)
                     except json.JSONDecodeError as e:
-                        log.warning(f'[CachePubSub] 消息格式错误 {e}')
+                        log.warning(f'[CachePubSub] Invalid message format: {e}')
                     except Exception as e:
-                        log.error(f'[CachePubSub] 处理通知失败: {e}')
+                        log.error(f'[CachePubSub] Failed to process notification: {e}')
 
             except asyncio.CancelledError:
                 break
             except Exception as e:
                 reconnect_attempts += 1
                 log.error(
-                    f'[CachePubSub] 订阅异常 ({reconnect_attempts}/{settings.CACHE_PUBSUB_MAX_RECONNECT_ATTEMPTS}): {e}'
+                    f'[CachePubSub] Subscription error '
+                    f'({reconnect_attempts}/{settings.CACHE_PUBSUB_MAX_RECONNECT_ATTEMPTS}): {e}'
                 )
 
                 if reconnect_attempts >= settings.CACHE_PUBSUB_MAX_RECONNECT_ATTEMPTS:
-                    log.error('[CachePubSub] 达到最大重连次数，停止订阅')
+                    log.error('[CachePubSub] Maximum reconnection attempts reached; stopping subscription')
                     break
 
                 await asyncio.sleep(settings.CACHE_PUBSUB_RECONNECT_DELAY)
@@ -93,7 +94,7 @@ class CachePubSubManager:
 
     @classmethod
     def start_listener(cls) -> None:
-        """启动缓存 Pub/Sub 监听器"""
+        """Start cache Pub/Sub listener"""
         if not settings.CACHE_LOCAL_ENABLED:
             return
 
@@ -102,7 +103,7 @@ class CachePubSubManager:
 
     @classmethod
     async def stop_listener(cls) -> None:
-        """停止缓存 Pub/Sub 监听器"""
+        """Stop cache Pub/Sub listener"""
         if cls._pubsub_task is None:
             return
 

@@ -12,15 +12,15 @@ from backend.plugin.oauth2.schema.user_social import CreateUserSocialParam
 
 
 class UserSocialService:
-    """用户社交账号服务类"""
+    """User social account service"""
 
     @staticmethod
     async def get_bindings(*, db: AsyncSession, user_id: int) -> list[str]:
         """
-        获取用户已绑定的社交账号
+        Get linked social accounts for the user
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
+        :param db: Database session
+        :param user_id: User ID
         :return:
         """
         bindings = await user_social_dao.get_by_user_id(db, user_id)
@@ -35,19 +35,19 @@ class UserSocialService:
         source: UserSocialType,
     ) -> None:
         """
-        通过 OAuth2 流程绑定用户社交账号
+        Link user social account through OAuth2
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
-        :param sid: 社交账号唯一编码
-        :param source: 绑定源
+        :param db: Database session
+        :param user_id: User ID
+        :param sid: Unique social account identifier
+        :param source: Provider to link
         :return:
         """
         if await user_social_dao.check_binding(db, user_id, source.value):
-            raise errors.RequestError(msg=f'用户已绑定 {source.value} 账号')
+            raise errors.RequestError(msg=f'User already has a linked {source.value} account')
 
         if await user_social_dao.get_by_sid(db, sid, source.value):
-            raise errors.RequestError(msg=f'该 {source.value} 账号已被其他用户绑定')
+            raise errors.RequestError(msg=f'This {source.value} account is already linked to another user')
 
         new_user_social = CreateUserSocialParam(sid=sid, source=source.value, user_id=user_id)
         await user_social_dao.create(db, new_user_social)
@@ -55,16 +55,16 @@ class UserSocialService:
     @staticmethod
     async def unbinding(*, db: AsyncSession, user_id: int, source: UserSocialType) -> int:
         """
-        解绑用户社交账号
+        Unlink user social account
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
-        :param source: 解绑源
+        :param db: Database session
+        :param user_id: User ID
+        :param source: Provider to unlink
         :return:
         """
         bind = await user_social_dao.check_binding(db, user_id, source.value)
         if not bind:
-            raise errors.NotFoundError(msg=f'用户未绑定 {source.value} 账号')
+            raise errors.NotFoundError(msg=f'User has no linked {source.value} account')
         return await user_social_dao.delete(db, user_id, source.value)
 
     @staticmethod
@@ -93,7 +93,7 @@ class UserSocialService:
                     state=state,
                 )
             case _:
-                raise errors.ForbiddenError(msg=f'暂不支持 {source} 绑定')
+                raise errors.ForbiddenError(msg=f'Account linking through {source} is not supported')
 
         return auth_url
 

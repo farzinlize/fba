@@ -21,7 +21,7 @@ router = APIRouter()
 google_client = GoogleOAuth20(settings.OAUTH2_GOOGLE_CLIENT_ID, settings.OAUTH2_GOOGLE_CLIENT_SECRET)
 
 
-@router.get('', summary='获取 google 授权链接')
+@router.get('', summary='Get Google authorization URL')
 async def get_google_oauth2_url() -> ResponseSchemaModel[str]:
     state = str(uuid.uuid4())
 
@@ -37,8 +37,10 @@ async def get_google_oauth2_url() -> ResponseSchemaModel[str]:
 
 @router.get(
     '/callback',
-    summary='google 授权自动重定向',
-    description='google 授权后，自动重定向到当前地址并获取用户信息，通过用户信息自动创建系统用户',
+    summary='Automatic Google authorization redirect',
+    description=(
+        'After Google authorization, redirect here to fetch user information and automatically create a system user'
+    ),
     dependencies=[Depends(RateLimiter(Rate(5, Duration.MINUTE)))],
 )
 async def google_oauth2_callback(  # ruff:ignore[missing-return-type-undocumented-public-function]
@@ -62,11 +64,11 @@ async def google_oauth2_callback(  # ruff:ignore[missing-return-type-undocumente
         state=state,
     )
 
-    # 绑定流程
+    # Account linking flow
     if data is None:
         return RedirectResponse(url=settings.OAUTH2_FRONTEND_BINDING_REDIRECT_URI)
 
-    # 登录流程
+    # Login flow
     return RedirectResponse(
         url=f'{settings.OAUTH2_FRONTEND_LOGIN_REDIRECT_URI}?access_token={data.access_token}&session_uuid={data.session_uuid}',
     )

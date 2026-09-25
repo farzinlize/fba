@@ -1,37 +1,37 @@
 from pathlib import Path
 
-# 项目根目录
+# Project root directory
 BASE_PATH = Path(__file__).resolve().parent.parent
 
-# 环境变量文件
+# Environment variables file
 ENV_FILE_PATH = BASE_PATH / '.env'
 
-# 环境变量示例文件
+# Example environment variables file
 ENV_EXAMPLE_FILE_PATH = BASE_PATH / '.env.example'
 
-# alembic 迁移文件存放路径
+# Alembic migration directory
 ALEMBIC_VERSION_DIR = BASE_PATH / 'alembic' / 'versions'
 
-# 日志文件路径
+# Log file path
 LOG_DIR = BASE_PATH / 'log'
 
-# 静态资源目录
+# Static resource directory
 STATIC_DIR = BASE_PATH / 'static'
 
-# 上传文件目录
+# Upload directory
 UPLOAD_DIR = STATIC_DIR / 'upload'
 
-# 插件目录
+# Plugin directory
 PLUGIN_DIR = BASE_PATH / 'plugin'
 
-# 国际化文件目录
+# Locale file directory
 LOCALE_DIR = BASE_PATH / 'locale'
 
-# MySQL 脚本目录
+# MySQL script directory
 MYSQL_SCRIPT_DIR = BASE_PATH / 'sql' / 'mysql'
 
-# PostgreSQL 脚本目录
+# PostgreSQL script directory
 POSTGRESQL_SCRIPT_DIR = BASE_PATH / 'sql' / 'postgresql'
 
-# 热重载锁文件
+# Hot reload lock file
 RELOAD_LOCK_FILE = BASE_PATH / '.reload.lock'

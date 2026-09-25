@@ -1,7 +1,7 @@
 [plugin]
-summary = "参数配置"
+summary = "Configuration parameters"
 version = "0.0.2"
-description = "通常用于动态配置系统参数和前端工程数据展示"
+description = "Dynamically configure system parameters and frontend display data"
 author = "wu-clan"
 tags = ["other"]
 database = ["mysql", "postgresql"]
@@ -11,4 +11,4 @@ extend = "admin"
 
 [api.config]
 prefix = "/configs"
-tags = "系统参数配置"
+tags = "System configuration parameters"

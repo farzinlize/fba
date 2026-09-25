@@ -1,25 +1,25 @@
 # Code Generator
 
-代码生成器插件，生成通用业务代码
+Code generator plugin for common business code.
 
-- 支持维护代码生成业务配置与模型列信息
-- 支持手动模式和自动导表模式生成通用业务代码
-- 支持预览、写入磁盘和下载生成结果
+- Maintain code generation business configuration and model column information.
+- Generate common business code manually or by automatically importing database tables.
+- Preview, write, and download generated code.
 
-## 插件类型
+## Plugin type
 
-- 应用级插件
+- Application-level plugin
 
-## 配置说明
+## Configuration
 
-插件目录下 `plugin.toml` 的 `[settings]` 中包含以下内容：
+The `[settings]` section of the plugin directory `plugin.toml` contains:
 
 ```toml
 [settings]
 CODE_GENERATOR_DOWNLOAD_ZIP_FILENAME = 'fba_generator'
 ```
 
-当前项目的 `backend/core/conf.py` 已包含以下字段：
+The project `backend/core/conf.py` already includes these fields:
 
 ```python
 ##################################################
@@ -28,23 +28,23 @@ CODE_GENERATOR_DOWNLOAD_ZIP_FILENAME = 'fba_generator'
 CODE_GENERATOR_DOWNLOAD_ZIP_FILENAME: str
 ```
 
-## 配置项说明
+## Settings
 
-- `CODE_GENERATOR_DOWNLOAD_ZIP_FILENAME`：控制代码生成结果下载压缩包的文件名
+- `CODE_GENERATOR_DOWNLOAD_ZIP_FILENAME`: Filename of the downloadable generated-code archive.
 
-## 使用方式
+## Usage
 
-1. 安装并启用插件后，重启后端服务
-2. 维护业务配置和模型列信息
-3. 执行预览、生成和下载流程
-4. 生成代码会直接写入磁盘，仅必须在开发环境使用
+1. Install and enable the plugin, then restart the backend service.
+2. Maintain business configuration and model column information.
+3. Preview, generate, and download code.
+4. Generated code is written directly to disk; use this only in development.
 
-## 卸载说明
+## Uninstallation
 
-- 卸载插件后，建议同步移除相关插件基础配置和 `backend/core/conf.py` 中的插件配置
-- 如项目中已接入代码生成相关页面或自动化流程，请同步清理对应集成
+- After uninstalling, remove related base settings and plugin settings from `backend/core/conf.py`.
+- Remove any code generation pages or automation integrations that depend on this plugin.
 
-## 联系方式
+## Contact
 
-- 作者：`wu-clan`
-- 反馈方式：提交 Issue 或 PR
+- Author: `wu-clan`
+- Feedback: Submit an issue or pull request.

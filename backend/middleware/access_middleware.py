@@ -20,14 +20,14 @@ from backend.utils.trace_id import get_request_trace_id
 
 
 class AccessMiddleware(BaseHTTPMiddleware):
-    """访问日志中间件"""
+    """Access log middleware"""
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:  # ruff:ignore[complex-structure]
         """
-        处理请求并记录访问日志
+        Process request and record access log
 
-        :param request: FastAPI 请求对象
-        :param call_next: 下一个中间件或路由处理函数
+        :param request: FastAPI request object
+        :param call_next: Next middleware or route handler
         :return:
         """
         perf_time = time.perf_counter()
@@ -40,7 +40,9 @@ class AccessMiddleware(BaseHTTPMiddleware):
         method = request.method
 
         if method != 'OPTIONS':
-            log.debug(f'--> 请求开始[{path if not request.url.query else request.url.path + "?" + request.url.query}]')
+            log.debug(
+                f'--> Request started [{path if not request.url.query else request.url.path + "?" + request.url.query}]'
+            )
 
         should_record_metrics = settings.GRAFANA_METRICS_ENABLE and path.startswith(settings.FASTAPI_API_V1_PATH)
         if should_record_metrics:

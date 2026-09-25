@@ -4,7 +4,7 @@ from backend.common.schema import SchemaBase
 
 
 class GetTaskRegisteredDetail(SchemaBase):
-    """已注册任务详情"""
+    """Registered task details"""
 
-    name: str = Field(description='任务名称')
-    task: str = Field(description='任务函数')
+    name: str = Field(description='Task name')
+    task: str = Field(description='Task function')

@@ -2,14 +2,14 @@ from backend.common.enums import StrEnum
 
 
 class UserSocialType(StrEnum):
-    """用户社交类型"""
+    """User social account type"""
 
     github = 'Github'
     google = 'Google'
 
 
 class UserSocialAuthType(StrEnum):
-    """用户社交授权类型"""
+    """User social authorization type"""
 
     login = 'login'
     binding = 'binding'

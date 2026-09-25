@@ -8,15 +8,15 @@ from backend.app.admin.schema.opera_log import CreateOperaLogParam
 
 
 class CRUDOperaLog(CRUDPlus[OperaLog]):
-    """操作日志数据库操作类"""
+    """Operation log database operations"""
 
     async def get_select(self, username: str | None, status: int | None, ip: str | None) -> Select:
         """
-        获取操作日志列表查询表达式
+        Get the query expression for the operation log list
 
-        :param username: 用户名
-        :param status: 操作状态
-        :param ip: IP 地址
+        :param username: Username
+        :param status: Operation status
+        :param ip: IP address
         :return:
         """
         filters = {}
@@ -32,30 +32,30 @@ class CRUDOperaLog(CRUDPlus[OperaLog]):
 
     async def create(self, db: AsyncSession, obj: CreateOperaLogParam) -> None:
         """
-        创建操作日志
+        Create operation log
 
-        :param db: 数据库会话
-        :param obj: 操作日志创建参数
+        :param db: Database session
+        :param obj: Operation log creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def bulk_create(self, db: AsyncSession, objs: list[CreateOperaLogParam]) -> None:
         """
-        批量创建操作日志
+        Create operation logs in bulk
 
-        :param db: 数据库会话
-        :param objs: 操作日志创建参数列表
+        :param db: Database session
+        :param objs: List of operation log creation parameters
         :return:
         """
         await self.create_models(db, objs)
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
         """
-        批量删除操作日志
+        Delete operation logs in bulk
 
-        :param db: 数据库会话
-        :param pks: 操作日志 ID 列表
+        :param db: Database session
+        :param pks: Operation log ID list
         :return:
         """
         return await self.delete_model_by_column(db, allow_multiple=True, id__in=pks)
@@ -63,9 +63,9 @@ class CRUDOperaLog(CRUDPlus[OperaLog]):
     @staticmethod
     async def delete_all(db: AsyncSession) -> None:
         """
-        删除所有日志
+        Delete all logs
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         await db.execute(sa_delete(OperaLog))

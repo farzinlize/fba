@@ -18,39 +18,40 @@ if TYPE_CHECKING:
 
 class RequestPermission:
     """
-    请求权限验证器，用于角色菜单 RBAC 权限控制
+    Request permission validator for role-menu RBAC
 
-    注意：
-        使用此请求权限时，需要将 `Depends(RequestPermission('xxx'))` 在 `DependsRBAC` 之前设置，
-        因为 FastAPI 当前版本的接口依赖注入按正序执行，意味着 RBAC 标识会在验证前被设置
+    Note:
+        Place `Depends(RequestPermission('xxx'))` before `DependsRBAC` when using this permission check,
+        because the current FastAPI version resolves endpoint dependencies in order,
+        setting the RBAC identifier before validation
     """
 
     def __init__(self, value: str) -> None:
         """
-        初始化请求权限验证器
+        Initialize request permission validator
 
-        :param value: 权限标识
+        :param value: Permission identifier
         :return:
         """
         self.value = value
 
     async def __call__(self, request: Request) -> None:
         """
-        验证请求权限
+        Validate request permissions
 
-        :param request: FastAPI 请求对象
+        :param request: FastAPI request object
         :return:
         """
         if settings.RBAC_ROLE_MENU_MODE:
             if not isinstance(self.value, str):
                 raise errors.ServerError
 
-            # 设置权限标识到上下文
+            # Set permission identifier in context
             ctx.permission = self.value
 
 
 def get_data_permission_models() -> dict[str, object]:
-    """获取所有可用于数据权限的模型"""
+    """Get all models available for data permissions"""
     return {getattr(model, '__name__', str(model)): model for model in get_all_models()}
 
 
@@ -58,25 +59,25 @@ def filter_data_permission(  # ruff:ignore[complex-structure]
     request: Request, *models: type[Model] | AliasedClass | Alias | Table
 ) -> ColumnElement[bool]:
     """
-    过滤数据权限，控制用户可见数据范围
+    Filter data permissions to control which data users can access
 
-    使用场景：
-        - 控制用户能看到哪些数据
+    Use cases:
+        - Control which data users can see
 
-    :param request: FastAPI 请求对象
-    :param models: 需要应用数据权限的模型类
+    :param request: FastAPI request object
+    :param models: Model class to which data permissions apply
     :return:
     """
-    # 超级管理员不过滤
+    # Do not filter superusers
     if request.user.is_superuser:
         return or_(1 == 1)
 
-    # 角色未启用数据权限过滤
+    # Data permission filtering is not enabled for the role
     for role in request.user.roles:
         if role.status and not role.is_filter_scopes:
             return or_(1 == 1)
 
-    # 获取数据规则
+    # Get data rules
     data_rules: set[DataRule] = set()
     for role in request.user.roles:
         if not role.status:
@@ -85,21 +86,21 @@ def filter_data_permission(  # ruff:ignore[complex-structure]
             if scope.status:
                 data_rules.update(rule for rule in scope.rules if rule is not None)
 
-    # 启用数据权限过滤，但没有已启用的数据权限
+    # Data permission filtering is enabled, but no enabled data permissions exist
     if not data_rules:
         return or_(1 != 1)
 
-    # 目标模型
+    # Target model
     target_model_map = (
         {getattr(model, '__name__', str(model)): model for model in models} if models else get_data_permission_models()
     )
 
-    # 字段模板变量映射
+    # Field template variable mapping
     column_template_resolvers = {
         var['key']: var['key'].strip('_') for var in settings.DATA_PERMISSION_COLUMN_TEMPLATE_VARIABLES
     }
 
-    # 模板变量解析映射
+    # Template variable resolution mapping
     template_variable_keys = {var['key'] for var in settings.DATA_PERMISSION_TEMPLATE_VARIABLES}
     template_resolvers = {
         '${user_id}': request.user.id,
@@ -125,7 +126,7 @@ def filter_data_permission(  # ruff:ignore[complex-structure]
             if rule_column in settings.DATA_PERMISSION_COLUMN_EXCLUDE:
                 continue
 
-            # 构建过滤条件
+            # Build filter conditions
             column_obj = (
                 getattr(target_model, rule_column)
                 if not isinstance(target_model, Table)
@@ -134,7 +135,7 @@ def filter_data_permission(  # ruff:ignore[complex-structure]
             column_type = table.columns[rule_column].type.python_type
 
             def cast_value(value: Any, _column_type: type = column_type) -> Any:
-                """类型转换"""
+                """Type conversion"""
                 try:
                     if value in template_variable_keys:
                         return _column_type(template_resolvers[value])
@@ -163,7 +164,7 @@ def filter_data_permission(  # ruff:ignore[complex-structure]
                     values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
                     condition = column_obj.not_in(values)
 
-            # 根据运算符添加到对应列表
+            # Add to the corresponding list based on the operator
             if condition is not None:
                 match data_rule.operator:
                     case RoleDataRuleOperatorType.AND:
@@ -171,7 +172,7 @@ def filter_data_permission(  # ruff:ignore[complex-structure]
                     case RoleDataRuleOperatorType.OR:
                         where_or_list.append(condition)
 
-    # 组合所有条件
+    # Combine all conditions
     where_list = []
     if where_and_list:
         where_list.append(and_(*where_and_list))
@@ -181,19 +182,19 @@ def filter_data_permission(  # ruff:ignore[complex-structure]
     return or_(*where_list) if where_list else or_(1 == 1)
 
 
-# 此函数是为了简化调用方式，但目前无法正常工作: https://github.com/fastapi/fastapi/discussions/14438
+# This function simplifies calls but does not currently work: https://github.com/fastapi/fastapi/discussions/14438
 # def DataPermissionFilter(*models: type[Model] | AliasedClass | Alias | Table) -> type[ColumnElement[bool]]:
 #     """
-#     指定模型的数据权限过滤器
+#     Data permission filter for the specified models
 #
-#     :param models: 模型类（可选，支持多个）
+#     :param models: Model classes (optional; multiple supported)
 #     :return:
 #     """
 #     return Annotated[ColumnElement[bool], Depends(partial(filter_data_permission, *models))]
 
 
 class DataPermissionFilter:
-    """指定模型的数据权限过滤器"""
+    """Data permission filter for the specified models"""
 
     def __init__(self, *models: type[Model] | AliasedClass | Alias | Table) -> None:
         self.models = models

@@ -14,7 +14,7 @@ from backend.utils.timezone import timezone
 
 class GenTemplate:
     def __init__(self) -> None:
-        """初始化模板生成器"""
+        """Initialize template generator"""
         self.env = Environment(
             loader=FileSystemLoader(JINJA2_TEMPLATE_DIR),
             autoescape=select_autoescape(enabled_extensions=['jinja']),
@@ -28,9 +28,9 @@ class GenTemplate:
 
     def get_template(self, jinja_file: str) -> Template:
         """
-        获取 Jinja2 模板对象
+        Get Jinja2 template object
 
-        :param jinja_file: Jinja2 模板文件路径
+        :param jinja_file: Jinja2 template file path
         :return:
         """
         return self.env.get_template(jinja_file)
@@ -38,9 +38,9 @@ class GenTemplate:
     @staticmethod
     def get_template_path_mapping(business: CodeGenBusiness) -> dict[str, str]:
         """
-        获取模板文件到生成文件的路径映射
+        Get mapping from template files to generated file paths
 
-        :param business: 代码生成业务对象
+        :param business: Code generation business object
         :return:
         """
         app_name = business.app_name
@@ -61,9 +61,9 @@ class GenTemplate:
 
     def get_init_files(self, business: CodeGenBusiness) -> dict[str, str]:
         """
-        获取需要生成的 __init__.py 文件及其内容
+        Get required __init__.py files and their contents
 
-        :param business: 业务对象
+        :param business: Business definition object
         :return:
         """
         app_name = business.app_name
@@ -88,10 +88,10 @@ class GenTemplate:
         business: CodeGenBusiness, models: Sequence[CodeGenColumn]
     ) -> dict[str, str | Sequence[CodeGenColumn]]:
         """
-        获取模板变量
+        Get template variables
 
-        :param business: 代码生成业务对象
-        :param models: 代码生成模型对象列表
+        :param business: Code generation business object
+        :param models: List of code generation model objects
         :return:
         """
         vars_dict = {

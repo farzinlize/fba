@@ -17,15 +17,15 @@ from backend.plugin.code_generator.service.column_service import code_gen_column
 router = APIRouter()
 
 
-@router.get('/types', summary='获取代码生成模型列类型', dependencies=[DependsJwtAuth])
+@router.get('/types', summary='Get code generation model column types', dependencies=[DependsJwtAuth])
 async def get_column_types() -> ResponseSchemaModel[list[str]]:
     column_types = await code_gen_column_service.get_types()
     return response_base.success(data=column_types)
 
 
-@router.get('/{pk}', summary='获取代码生成模型列详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='Get code generation model column details', dependencies=[DependsJwtAuth])
 async def get_column(
-    db: CurrentSession, pk: Annotated[int, Path(description='模型列 ID')]
+    db: CurrentSession, pk: Annotated[int, Path(description='Model column ID')]
 ) -> ResponseSchemaModel[GetCodeGenColumnDetail]:
     data = await code_gen_column_service.get(db=db, pk=pk)
     return response_base.success(data=data)
@@ -33,7 +33,7 @@ async def get_column(
 
 @router.post(
     '',
-    summary='创建代码生成模型列',
+    summary='Create code generation model column',
     dependencies=[
         Depends(RequestPermission('codegen:column:add')),
         DependsRBAC,
@@ -46,14 +46,16 @@ async def create_column(db: CurrentSessionTransaction, obj: CreateCodeGenColumnP
 
 @router.put(
     '/{pk}',
-    summary='更新代码生成模型列',
+    summary='Update code generation model column',
     dependencies=[
         Depends(RequestPermission('codegen:column:edit')),
         DependsRBAC,
     ],
 )
 async def update_column(
-    db: CurrentSessionTransaction, pk: Annotated[int, Path(description='模型列 ID')], obj: UpdateCodeGenColumnParam
+    db: CurrentSessionTransaction,
+    pk: Annotated[int, Path(description='Model column ID')],
+    obj: UpdateCodeGenColumnParam,
 ) -> ResponseModel:
     count = await code_gen_column_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
@@ -63,14 +65,14 @@ async def update_column(
 
 @router.delete(
     '/{pk}',
-    summary='删除代码生成模型列',
+    summary='Delete code generation model column',
     dependencies=[
         Depends(RequestPermission('codegen:column:del')),
         DependsRBAC,
     ],
 )
 async def delete_column(
-    db: CurrentSessionTransaction, pk: Annotated[int, Path(description='模型列 ID')]
+    db: CurrentSessionTransaction, pk: Annotated[int, Path(description='Model column ID')]
 ) -> ResponseModel:
     count = await code_gen_column_service.delete(db=db, pk=pk)
     if count > 0:

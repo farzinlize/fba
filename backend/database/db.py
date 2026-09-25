@@ -24,10 +24,10 @@ from backend.core.conf import settings
 
 def get_database_url(*, unittest: bool = False, with_database: bool = True) -> URL:
     """
-    创建数据库链接
+    Create database URL
 
-    :param unittest: 是否用于单元测试
-    :param with_database: 是否包含数据库名（创建数据库时不需要）
+    :param unittest: Whether this is for unit tests
+    :param with_database: Whether to include the database name (not needed when creating the database)
     :return:
     """
     if with_database:
@@ -50,9 +50,9 @@ def get_database_url(*, unittest: bool = False, with_database: bool = True) -> U
 
 def create_database_async_engine(url: str | URL) -> AsyncEngine:
     """
-    创建数据库异步引擎
+    Create asynchronous database engine
 
-    :param url: 数据库连接地址
+    :param url: Database connection URL
     :return:
     """
     try:
@@ -61,53 +61,53 @@ def create_database_async_engine(url: str | URL) -> AsyncEngine:
             echo=settings.DATABASE_ECHO,
             echo_pool=settings.DATABASE_POOL_ECHO,
             future=True,
-            # 中等并发
-            pool_size=10,  # 低：- 高：+
-            max_overflow=20,  # 低：- 高：+
-            pool_timeout=30,  # 低：+ 高：-
-            pool_recycle=3600,  # 低：+ 高：-
-            pool_pre_ping=True,  # 低：False 高：True
-            pool_use_lifo=False,  # 低：False 高：True
+            # Moderate concurrency
+            pool_size=10,  # Low: - High: +
+            max_overflow=20,  # Low: - High: +
+            pool_timeout=30,  # Low: + High: -
+            pool_recycle=3600,  # Low: + High: -
+            pool_pre_ping=True,  # Low: False High: True
+            pool_use_lifo=False,  # Low: False High: True
         )
     except Exception as e:
-        log.error(f'数据库连接失败 {e}')
+        log.error(f'Database connection failed: {e}')
         sys.exit()
 
 
 class DatabaseAsyncSessionMaker:
-    """按数据源名选择对应的 async_sessionmaker"""
+    """Select the corresponding async_sessionmaker by data source name"""
 
     def __init__(self, makers: Mapping[str, async_sessionmaker[AsyncSession]]) -> None:
         if 'default' not in makers:
-            raise ValueError('会话工厂必须包含 default 数据源')
+            raise ValueError('Session factories must include the default data source')
         self._makers = dict(makers)
 
     def _get_maker(self, source: str) -> async_sessionmaker[AsyncSession]:
         """
-        获取指定数据源的会话工厂
+        Get the session factory for a data source
 
-        :param source: 数据源名称
+        :param source: Data source name
         :return:
         """
         try:
             return self._makers[source]
         except KeyError as e:
-            raise ValueError(f'未知数据库数据源: {source}') from e
+            raise ValueError(f'Unknown database data source: {source}') from e
 
     def __call__(self, source: str = 'default', **kwargs: Any) -> AsyncSession:
         """
-        创建数据库会话
+        Create database session
 
-        :param source: 数据源名称
+        :param source: Data source name
         :return:
         """
         return self._get_maker(source)(**kwargs)
 
     def begin(self, source: str = 'default') -> AbstractAsyncContextManager[AsyncSession]:
         """
-        创建会话并开启事务，退出时提交并关闭
+        Create a session and begin a transaction; commit and close on exit
 
-        :param source: 数据源名称
+        :param source: Data source name
         :return:
         """
         return self._get_maker(source).begin()
@@ -119,10 +119,10 @@ def create_database_async_session(
     source_binds: Mapping[str, AsyncEngine] | None = None,
 ) -> DatabaseAsyncSessionMaker:
     """
-    创建支持命名数据源的数据库异步会话
+    Create asynchronous database sessions supporting named data sources
 
-    :param async_engine: 默认数据源异步引擎
-    :param source_binds: 额外数据源异步引擎
+    :param async_engine: Default data source asynchronous engine
+    :param source_binds: Additional data source asynchronous engines
     :return:
     """
     engines = dict(source_binds or {})
@@ -134,57 +134,57 @@ def create_database_async_session(
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """获取默认数据源会话"""
+    """Get default data source session"""
     async with async_db_session() as session:
         yield session
 
 
 async def get_db_transaction() -> AsyncGenerator[AsyncSession, None]:
-    """获取默认数据源事务会话"""
+    """Get default data source transactional session"""
     async with async_db_session.begin() as session:
         yield session
 
 
 async def create_tables() -> None:
-    """创建数据库表"""
+    """Create database tables"""
     async with async_engine.begin() as coon:
         await coon.run_sync(MappedBase.metadata.create_all)
 
 
 async def drop_tables() -> None:
-    """丢弃数据库表"""
+    """Drop database tables"""
     async with async_engine.begin() as conn:
         await conn.run_sync(MappedBase.metadata.drop_all)
 
 
 def uuid4_str() -> str:
-    """数据库引擎 UUID 类型兼容性解决方案"""
+    """Database engine UUID type compatibility workaround"""
     return str(uuid4())
 
 
-# SQLA 异步引擎和会话
+# SQLAlchemy asynchronous engines and sessions
 async_engine = create_database_async_engine(get_database_url())
 _database_engines: dict[str, AsyncEngine] = {'default': async_engine}
 for source, url in settings.DATABASE_SOURCES.items():
     if not source or source == 'default':
-        raise ValueError('DATABASE_SOURCES 数据源名称不能为空且不能为 default')
+        raise ValueError('DATABASE_SOURCES names must not be empty or equal to default')
     _database_engines[source] = create_database_async_engine(url)
 
 async_db_session = create_database_async_session(async_engine, source_binds=_database_engines)
 
 
 def get_database_engines() -> Mapping[str, AsyncEngine]:
-    """获取所有数据库引擎"""
+    """Get all database engines"""
     return _database_engines
 
 
 async def dispose_database() -> None:
-    """释放所有数据库连接池"""
+    """Dispose of all database connection pools"""
     for engine in _database_engines.values():
         await engine.dispose()
 
 
-# SQLA 连接池指标监听
+# Monitor SQLAlchemy connection pool metrics
 for source, engine in _database_engines.items():
     event.listen(
         engine.sync_engine.pool,

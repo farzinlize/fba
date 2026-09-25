@@ -18,29 +18,29 @@ from backend.common.pagination import paging_data
 
 
 class DataScopeService:
-    """数据范围服务类"""
+    """Data scope service"""
 
     @staticmethod
     async def get(*, db: AsyncSession, pk: int) -> DataScope:
         """
-        获取数据范围详情
+        Get data scope details
 
-        :param db: 数据库会话
-        :param pk: 范围 ID
+        :param db: Database session
+        :param pk: Scope ID
         :return:
         """
 
         data_scope = await data_scope_dao.get(db, pk)
         if not data_scope:
-            raise errors.NotFoundError(msg='数据范围不存在')
+            raise errors.NotFoundError(msg='Data scope does not exist')
         return data_scope
 
     @staticmethod
     async def get_all(*, db: AsyncSession) -> Sequence[DataScope]:
         """
-        获取所有数据范围
+        Get all data scopes
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
 
@@ -50,26 +50,26 @@ class DataScopeService:
     @staticmethod
     async def get_rules(*, db: AsyncSession, pk: int) -> DataScope:
         """
-        获取数据范围规则
+        Get data scope rules
 
-        :param db: 数据库会话
-        :param pk: 范围 ID
+        :param db: Database session
+        :param pk: Scope ID
         :return:
         """
 
         data_scope = await data_scope_dao.get_join(db, pk)
         if not data_scope:
-            raise errors.NotFoundError(msg='数据范围不存在')
+            raise errors.NotFoundError(msg='Data scope does not exist')
         return data_scope
 
     @staticmethod
     async def get_list(*, db: AsyncSession, name: str | None, status: int | None) -> dict[str, Any]:
         """
-        获取数据范围列表
+        Get data scope list
 
-        :param db: 数据库会话
-        :param name: 范围名称
-        :param status: 范围状态
+        :param db: Database session
+        :param name: Scope name
+        :param status: Scope status
         :return:
         """
         data_scope_select = await data_scope_dao.get_select(name, status)
@@ -78,32 +78,32 @@ class DataScopeService:
     @staticmethod
     async def create(*, db: AsyncSession, obj: CreateDataScopeParam) -> None:
         """
-        创建数据范围
+        Create data scope
 
-        :param db: 数据库会话
-        :param obj: 数据范围参数
+        :param db: Database session
+        :param obj: Data scope parameters
         :return:
         """
         data_scope = await data_scope_dao.get_by_name(db, obj.name)
         if data_scope:
-            raise errors.ConflictError(msg='数据范围已存在')
+            raise errors.ConflictError(msg='Data scope already exists')
         await data_scope_dao.create(db, obj)
 
     @staticmethod
     async def update(*, db: AsyncSession, pk: int, obj: UpdateDataScopeParam) -> int:
         """
-        更新数据范围
+        Update data scope
 
-        :param db: 数据库会话
-        :param pk: 范围 ID
-        :param obj: 数据范围更新参数
+        :param db: Database session
+        :param pk: Scope ID
+        :param obj: Data scope update parameters
         :return:
         """
         data_scope = await data_scope_dao.get(db, pk)
         if not data_scope:
-            raise errors.NotFoundError(msg='数据范围不存在')
+            raise errors.NotFoundError(msg='Data scope does not exist')
         if data_scope.name != obj.name and await data_scope_dao.get_by_name(db, obj.name):
-            raise errors.ConflictError(msg='数据范围已存在')
+            raise errors.ConflictError(msg='Data scope already exists')
         count = await data_scope_dao.update(db, pk, obj)
         await user_cache_manager.clear_by_data_scope_id(db, [pk])
         return count
@@ -111,20 +111,20 @@ class DataScopeService:
     @staticmethod
     async def update_data_scope_rule(*, db: AsyncSession, pk: int, rule_ids: UpdateDataScopeRuleParam) -> int:
         """
-        更新数据范围规则
+        Update data scope rules
 
-        :param db: 数据库会话
-        :param pk: 范围 ID
-        :param rule_ids: 规则 ID 列表
+        :param db: Database session
+        :param pk: Scope ID
+        :param rule_ids: Rule ID list
         :return:
         """
         data_scope = await data_scope_dao.get(db, pk)
         if not data_scope:
-            raise errors.NotFoundError(msg='数据范围不存在')
+            raise errors.NotFoundError(msg='Data scope does not exist')
         if rule_ids.rules:
             rules = await data_rule_dao.get_all_by_ids(db, list(set(rule_ids.rules)))
             if {rule.id for rule in rules} != set(rule_ids.rules):
-                raise errors.NotFoundError(msg='数据规则不存在')
+                raise errors.NotFoundError(msg='Data rule does not exist')
         count = await data_scope_dao.update_rules(db, pk, rule_ids)
         await user_cache_manager.clear_by_data_scope_id(db, [pk])
         return count
@@ -132,10 +132,10 @@ class DataScopeService:
     @staticmethod
     async def delete(*, db: AsyncSession, obj: DeleteDataScopeParam) -> int:
         """
-        批量删除数据范围
+        Delete data scopes in bulk
 
-        :param db: 数据库会话
-        :param obj: 范围 ID 列表
+        :param db: Database session
+        :param obj: Scope ID list
         :return:
         """
         count = await data_scope_dao.delete(db, obj.pks)

@@ -5,5 +5,5 @@ from backend.app.admin.api.v1.auth.captcha import router as captcha_router
 
 router = APIRouter(prefix='/auth')
 
-router.include_router(auth_router, tags=['授权'])
-router.include_router(captcha_router, tags=['验证码'])
+router.include_router(auth_router, tags=['Authentication'])
+router.include_router(captcha_router, tags=['CAPTCHA'])

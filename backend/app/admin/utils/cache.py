@@ -9,14 +9,14 @@ from backend.database.redis import redis_client
 
 
 class UserCacheManager:
-    """用户缓存管理"""
+    """User cache management"""
 
     @staticmethod
     async def clear(user_ids: Sequence[int]) -> None:
         """
-        清理用户缓存
+        Clear user cache
 
-        :param user_ids: 用户 ID 列表
+        :param user_ids: User ID list
         :return:
         """
         if user_ids:
@@ -24,10 +24,10 @@ class UserCacheManager:
 
     async def clear_by_role_id(self, db: AsyncSession, role_ids: list[int]) -> None:
         """
-        通过角色 ID 清理用户缓存
+        Clear user cache by role ID
 
-        :param db: 数据库会话
-        :param role_ids: 角色 ID 列表
+        :param db: Database session
+        :param role_ids: Role ID list
         :return:
         """
         stmt = select(user_role.c.user_id).where(user_role.c.role_id.in_(role_ids)).distinct()
@@ -38,10 +38,10 @@ class UserCacheManager:
 
     async def clear_by_menu_id(self, db: AsyncSession, menu_ids: list[int]) -> None:
         """
-        通过菜单 ID 清理用户缓存
+        Clear user cache by menu ID
 
-        :param db: 数据库会话
-        :param menu_ids: 菜单 ID 列表
+        :param db: Database session
+        :param menu_ids: Menu ID list
         :return:
         """
         stmt = (
@@ -57,10 +57,10 @@ class UserCacheManager:
 
     async def clear_by_data_scope_id(self, db: AsyncSession, scope_ids: list[int]) -> None:
         """
-        通过数据范围 ID 清理用户缓存
+        Clear user cache by data scope ID
 
-        :param db: 数据库会话
-        :param scope_ids: 数据范围 ID 列表
+        :param db: Database session
+        :param scope_ids: Data scope ID list
         :return:
         """
         stmt = (
@@ -76,10 +76,10 @@ class UserCacheManager:
 
     async def clear_by_data_rule_id(self, db: AsyncSession, rule_ids: list[int]) -> None:
         """
-        通过数据规则 ID 清理用户缓存
+        Clear user cache by data rule ID
 
-        :param db: 数据库会话
-        :param rule_ids: 数据规则 ID 列表
+        :param db: Database session
+        :param rule_ids: Data rule ID list
         :return:
         """
         stmt = (

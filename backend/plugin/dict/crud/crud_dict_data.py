@@ -11,24 +11,24 @@ from backend.utils.timezone import timezone
 
 
 class CRUDDictData(CRUDPlus[DictData]):
-    """字典数据数据库操作类"""
+    """Dictionary entry database operations"""
 
     async def get(self, db: AsyncSession, pk: int) -> DictData | None:
         """
-        获取字典数据详情
+        Get dictionary entry details
 
-        :param db: 数据库会话
-        :param pk: 字典数据 ID
+        :param db: Database session
+        :param pk: Dictionary entry ID
         :return:
         """
         return await self.select_model(db, pk, deleted=0)
 
     async def get_by_type_code(self, db: AsyncSession, type_code: str) -> Sequence[DictData]:
         """
-        通过字典类型编码获取字典数据
+        Get dictionary entries by dictionary type code
 
-        :param db: 数据库会话
-        :param type_code: 字典类型编码
+        :param db: Database session
+        :param type_code: Dictionary type code
         :return:
         """
         return await self.select_models_order(
@@ -42,9 +42,9 @@ class CRUDDictData(CRUDPlus[DictData]):
 
     async def get_all(self, db: AsyncSession) -> Sequence[DictData]:
         """
-        获取所有字典数据
+        Get all dictionary entries
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         return await self.select_models(db, deleted=0)
@@ -58,13 +58,13 @@ class CRUDDictData(CRUDPlus[DictData]):
         type_id: int | None,
     ) -> Select:
         """
-        获取字典数据列表查询表达式
+        Get the query expression for the dictionary entry list
 
-        :param type_code: 字典类型编码
-        :param label: 字典数据标签
-        :param value: 字典数据键值
-        :param status: 字典状态
-        :param type_id: 字典类型 ID
+        :param type_code: Dictionary type code
+        :param label: Dictionary entry label
+        :param value: Dictionary entry value
+        :param status: Dictionary status
+        :param type_id: Dictionary type ID
         :return:
         """
         filters = {'deleted': 0}
@@ -84,11 +84,11 @@ class CRUDDictData(CRUDPlus[DictData]):
 
     async def get_by_label_and_type_code(self, db: AsyncSession, label: str, type_code: str) -> DictData | None:
         """
-        通过标签获取字典数据
+        Get dictionary entry by label
 
-        :param db: 数据库会话
-        :param label: 字典标签
-        :param type_code: 字典类型编码
+        :param db: Database session
+        :param label: Dictionary label
+        :param type_code: Dictionary type code
         :return:
         """
         return await self.select_model_by_column(
@@ -99,11 +99,11 @@ class CRUDDictData(CRUDPlus[DictData]):
 
     async def create(self, db: AsyncSession, obj: CreateDictDataParam, type_code: str) -> None:
         """
-        创建字典数据
+        Create dictionary entry
 
-        :param db: 数据库会话
-        :param obj: 创建字典数据参数
-        :param type_code: 字典类型编码
+        :param db: Database session
+        :param obj: Dictionary entry creation parameters
+        :param type_code: Dictionary type code
         :return:
         """
         dict_obj = obj.model_dump()
@@ -113,12 +113,12 @@ class CRUDDictData(CRUDPlus[DictData]):
 
     async def update(self, db: AsyncSession, pk: int, obj: UpdateDictDataParam, type_code: str) -> int:
         """
-        更新字典数据
+        Update dictionary entry
 
-        :param db: 数据库会话
-        :param pk: 字典数据 ID
-        :param obj: 更新字典数据参数
-        :param type_code: 字典类型编码
+        :param db: Database session
+        :param pk: Dictionary entry ID
+        :param obj: Dictionary entry update parameters
+        :param type_code: Dictionary type code
         :return:
         """
         dict_obj = obj.model_dump()
@@ -127,10 +127,10 @@ class CRUDDictData(CRUDPlus[DictData]):
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
         """
-        批量删除字典数据
+        Delete dictionary entries in bulk
 
-        :param db: 数据库会话
-        :param pks: 字典数据 ID 列表
+        :param db: Database session
+        :param pks: Dictionary entry ID list
         :return:
         """
         return await self.delete_model_by_column(
@@ -147,10 +147,10 @@ class CRUDDictData(CRUDPlus[DictData]):
 
     async def delete_by_type_id(self, db: AsyncSession, type_ids: list[int]) -> int:
         """
-        通过类型 ID 删除字典数据
+        Delete dictionary entries by type ID
 
-        :param db: 数据库会话
-        :param type_ids: 字典类型 ID 列表
+        :param db: Database session
+        :param type_ids: Dictionary type ID list
         :return:
         """
         return await self.delete_model_by_column(

@@ -1,30 +1,30 @@
 # Config
 
-参数配置插件，通常用于动态维护系统参数和前端工程展示所需的配置数据
+Configuration plugin for dynamically maintaining system parameters and frontend display settings.
 
-- 支持维护系统参数配置
-- 适合前端工程展示数据和系统级动态参数场景
+- Maintain system configuration parameters.
+- Supports frontend display data and dynamic system settings.
 
-## 插件类型
+## Plugin type
 
-- 扩展级插件
-- 扩展目标：`admin`
+- Extension-level plugin
+- Extends: `admin`
 
-## 配置说明
+## Configuration
 
-当前插件无需额外配置
+This plugin requires no additional configuration.
 
-## 使用方式
+## Usage
 
-1. 安装并启用插件后，重启后端服务
-2. 通过系统后台页面或 Swagger 管理参数配置数据
+1. Install and enable the plugin, then restart the backend service.
+2. Manage configuration parameters through the admin interface or Swagger.
 
-## 卸载说明
+## Uninstallation
 
-- 卸载插件后无需额外清理环境变量或插件配置
-- 如业务代码或前端页面已依赖参数配置能力，请同步清理对应集成
+- No additional environment variables or plugin settings need removal after uninstalling.
+- Remove integrations in business code or frontend pages that depend on this configuration plugin.
 
-## 联系方式
+## Contact
 
-- 作者：`wu-clan`
-- 反馈方式：提交 Issue 或 PR
+- Author: `wu-clan`
+- Feedback: Submit an issue or pull request.

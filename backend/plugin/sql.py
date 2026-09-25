@@ -11,11 +11,11 @@ def build_sql_filename(
     suffix: str | None = None,
 ) -> str:
     """
-    构建插件 SQL 脚本文件名
+    Build plugin SQL script filename
 
-    :param prefix: SQL 脚本文件名前缀，例如 init 或 destroy
-    :param pk_type: 主键类型，雪花 ID 模式会追加 snowflake 标识
-    :param suffix: 可选文件名后缀，追加在主键类型标识之后
+    :param prefix: SQL script filename prefix, such as init or destroy
+    :param pk_type: Primary key type; append the snowflake marker for Snowflake IDs
+    :param suffix: Optional filename suffix appended after the primary key marker
     :return:
     """
     parts = [prefix]
@@ -28,11 +28,11 @@ def build_sql_filename(
 
 async def get_plugin_sql(plugin: str, db_type: DataBaseType, pk_type: PrimaryKeyType) -> str | None:
     """
-    获取插件 SQL 脚本
+    Get plugin SQL scripts
 
-    :param plugin: 插件名称
-    :param db_type: 数据库类型
-    :param pk_type: 主键类型
+    :param plugin: Plugin name
+    :param db_type: Database type
+    :param pk_type: Primary key type
     :return:
     """
     sql_dir = PLUGIN_DIR / plugin / 'sql' / ('mysql' if db_type == DataBaseType.mysql else 'postgresql')
@@ -43,11 +43,11 @@ async def get_plugin_sql(plugin: str, db_type: DataBaseType, pk_type: PrimaryKey
 
 async def get_plugin_destroy_sql(plugin: str, db_type: DataBaseType, pk_type: PrimaryKeyType) -> str | None:
     """
-    获取插件销毁 SQL 脚本
+    Get plugin teardown SQL scripts
 
-    :param plugin: 插件名称
-    :param db_type: 数据库类型
-    :param pk_type: 主键类型
+    :param plugin: Plugin name
+    :param db_type: Database type
+    :param pk_type: Primary key type
     :return:
     """
     sql_dir = PLUGIN_DIR / plugin / 'sql' / ('mysql' if db_type == DataBaseType.mysql else 'postgresql')

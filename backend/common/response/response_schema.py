@@ -11,9 +11,9 @@ SchemaT = TypeVar('SchemaT')
 
 class ResponseModel(BaseModel):
     """
-    不包含返回数据 schema 的通用型统一返回模型
+    Generic unified response model without a response data schema
 
-    示例::
+    Example::
 
         @router.get('/test', response_model=ResponseModel)
         def test():
@@ -31,16 +31,16 @@ class ResponseModel(BaseModel):
             return ResponseModel(code=res.code, msg=res.msg, data={'test': 'test'})
     """
 
-    code: int = Field(CustomResponseCode.HTTP_200.code, description='返回状态码')
-    msg: str = Field(CustomResponseCode.HTTP_200.msg, description='返回信息')
-    data: Any | None = Field(None, description='返回数据')
+    code: int = Field(CustomResponseCode.HTTP_200.code, description='Response status code')
+    msg: str = Field(CustomResponseCode.HTTP_200.msg, description='Response message')
+    data: Any | None = Field(None, description='Response data')
 
 
 class ResponseSchemaModel(ResponseModel, Generic[SchemaT]):
     """
-    包含返回数据 schema 的通用型统一返回模型
+    Generic unified response model with a response data schema
 
-    示例::
+    Example::
 
         @router.get('/test', response_model=ResponseSchemaModel[GetApiDetail])
         def test():
@@ -62,7 +62,7 @@ class ResponseSchemaModel(ResponseModel, Generic[SchemaT]):
 
 
 class ResponseBase:
-    """统一返回方法"""
+    """Unified response methods"""
 
     @staticmethod
     def __response(
@@ -71,10 +71,10 @@ class ResponseBase:
         data: Any | None,
     ) -> ResponseModel | ResponseSchemaModel[Any]:
         """
-        请求返回通用方法
+        Generic request response method
 
-        :param res: 返回信息
-        :param data: 返回数据
+        :param res: Response message
+        :param data: Response data
         :return:
         """
         if data is None:
@@ -104,10 +104,10 @@ class ResponseBase:
         data: Any | None = None,
     ) -> ResponseModel | ResponseSchemaModel[Any]:
         """
-        成功响应
+        Success response
 
-        :param res: 返回信息
-        :param data: 返回数据
+        :param res: Response message
+        :param data: Response data
         :return:
         """
         return self.__response(res=res, data=data)
@@ -135,10 +135,10 @@ class ResponseBase:
         data: Any = None,
     ) -> ResponseModel | ResponseSchemaModel[Any]:
         """
-        失败响应
+        Failure response
 
-        :param res: 返回信息
-        :param data: 返回数据
+        :param res: Response message
+        :param data: Response data
         :return:
         """
         return self.__response(res=res, data=data)
@@ -150,14 +150,14 @@ class ResponseBase:
         data: Any | None = None,
     ) -> Response:
         """
-        此方法是为了提高接口响应速度而创建的，在解析较大 json 时有显著性能提升，但将丢失 pydantic 解析和验证
+        Improve response speed, especially for large JSON payloads, by bypassing Pydantic parsing and validation
 
         .. warning::
 
-            使用此返回方法时，不能指定接口参数 response_model 和箭头返回类型
+            When using this response method, do not set response_model or a return type annotation on the endpoint
 
-        :param res: 返回信息
-        :param data: 返回数据
+        :param res: Response message
+        :param data: Response data
         :return:
         """
         return MsgSpecJSONResponse({'code': res.code, 'msg': res.msg, 'data': data})

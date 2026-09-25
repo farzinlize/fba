@@ -8,10 +8,10 @@ begin
 
     insert into sys_menu (title, name, path, sort, icon, type, component, perms, status, display, cache, link, remark, parent_id, created_time, updated_time)
     values
-    ('新增', 'Add{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:add', 1, 0, 1, '', null, parent_menu_id, now(), null),
-    ('修改', 'Edit{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:edit', 1, 0, 1, '', null, parent_menu_id, now(), null),
-    ('删除', 'Delete{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:del', 1, 0, 1, '', null, parent_menu_id, now(), null),
-    ('查询', 'Get{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:get', 1, 0, 1, '', null, parent_menu_id, now(), null);
+    ('Add', 'Add{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:add', 1, 0, 1, '', null, parent_menu_id, now(), null),
+    ('Edit', 'Edit{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:edit', 1, 0, 1, '', null, parent_menu_id, now(), null),
+    ('Delete', 'Delete{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:del', 1, 0, 1, '', null, parent_menu_id, now(), null),
+    ('Query', 'Get{{ schema_name }}', null, 0, null, 2, null, '{{ permission }}:get', 1, 0, 1, '', null, parent_menu_id, now(), null);
 end $$;
 
 select setval(pg_get_serial_sequence('sys_menu', 'id'),coalesce(max(id), 0) + 1, true) from sys_menu;

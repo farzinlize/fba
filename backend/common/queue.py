@@ -17,12 +17,12 @@ T = TypeVar('T')
 
 async def batch_dequeue(queue: Queue[T], max_items: int, timeout: float, *, queue_name: str = 'default') -> list[T]:
     """
-    从异步队列中获取多个项目
+    Get multiple items from an asynchronous queue
 
-    :param queue: 用于获取项目的 `asyncio.Queue` 队列
-    :param max_items: 从队列中获取的最大项目数量
-    :param timeout: 总的等待超时时间（秒）
-    :param queue_name: 队列名称，用于 Prometheus 标签
+    :param queue: The `asyncio.Queue` from which to retrieve items
+    :param max_items: Maximum number of items to retrieve
+    :param timeout: Total wait timeout in seconds
+    :param queue_name: Queue name used as a Prometheus label
     :return:
     """
     items = []
@@ -40,7 +40,7 @@ async def batch_dequeue(queue: Queue[T], max_items: int, timeout: float, *, queu
         pass
     except Exception as e:
         inc_queue_exception(queue_name=queue_name)
-        log.error(f'队列批量获取失败: {e}')
+        log.error(f'Failed to retrieve queue batch: {e}')
     finally:
         observe_batch_dequeue_cost(start, queue_name=queue_name)
         observe_queue_size(queue, queue_name=queue_name)
@@ -55,19 +55,19 @@ async def batch_consume(
     handler: Callable[..., Awaitable[None]],
     *,
     queue_name: str = 'default',
-    error_message: str = '队列批量处理失败',
-    item_name: str = '数据',
+    error_message: str = 'Queue batch processing failed',
+    item_name: str = 'Data',
 ) -> None:
     """
-    持续批量消费队列
+    Continuously consume the queue in batches
 
-    :param queue: 用于获取项目的 `asyncio.Queue` 队列
-    :param max_items: 从队列中获取的最大项目数量
-    :param timeout: 总的等待超时时间（秒）
-    :param handler: 批量处理函数
-    :param queue_name: 队列名称，用于 Prometheus 标签
-    :param error_message: 处理失败日志消息
-    :param item_name: 队列数据名称
+    :param queue: The `asyncio.Queue` from which to retrieve items
+    :param max_items: Maximum number of items to retrieve
+    :param timeout: Total wait timeout in seconds
+    :param handler: Batch processing function
+    :param queue_name: Queue name used as a Prometheus label
+    :param error_message: Log message on processing failure
+    :param item_name: Queue data name
     :return:
     """
     while True:
@@ -78,7 +78,7 @@ async def batch_consume(
         try:
             await handler(items)
         except Exception as e:
-            log.error(f'{error_message}，丢失 {len(items)} 条{item_name}: {e}')
+            log.error(f'{error_message}; lost {len(items)} {item_name} items: {e}')
         finally:
             for _ in items:
                 queue.task_done()

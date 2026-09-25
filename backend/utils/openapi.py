@@ -4,9 +4,9 @@ from fastapi.routing import APIRoute
 
 def simplify_operation_ids(app: FastAPI) -> None:
     """
-    简化操作 ID，以便生成的客户端具有更简单的 API 函数名称
+    Simplify operation IDs so generated clients have simpler API function names
 
-    :param app: FastAPI 应用实例
+    :param app: FastAPI application instance
     :return:
     """
     for route in app.routes:
@@ -16,9 +16,9 @@ def simplify_operation_ids(app: FastAPI) -> None:
 
 def ensure_unique_route_names(app: FastAPI) -> None:
     """
-    检查路由名称是否唯一
+    Check that route names are unique
 
-    :param app: FastAPI 应用实例
+    :param app: FastAPI application instance
     :return:
     """
     temp_routes = set()

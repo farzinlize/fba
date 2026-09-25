@@ -1,0 +1,112 @@
+error:
+  captcha:
+    error: کد تأیید اشتباه است
+    invalid: کد تأیید معتبر نیست؛ لطفاً کد جدیدی دریافت کنید
+    expired: کد تأیید منقضی شده است؛ لطفاً کد جدیدی دریافت کنید
+  language_not_found: بستهٔ زبان درخواستی بارگذاری نشده یا موجود نیست
+pydantic:
+  # Custom validation messages; keys and placeholders match the Chinese locale.
+  arguments_type: آرگومان‌ها باید از نوع تاپل، فهرست یا دیکشنری باشند
+  assertion_error: 'شرط بررسی برقرار نیست: {error}'
+  bool_parsing: ورودی باید یک مقدار بولی معتبر باشد؛ تفسیر ورودی ممکن نیست
+  bool_type: ورودی باید یک مقدار بولی معتبر باشد
+  bytes_too_long: 'داده باید حداکثر {max_length} بایت داشته باشد'
+  bytes_too_short: 'داده باید حداقل {min_length} بایت داشته باشد'
+  bytes_type: ورودی باید از نوع بایت معتبر باشد
+  callable_type: ورودی باید یک شیء قابل فراخوانی باشد
+  dataclass_exact_type: 'ورودی باید نمونه‌ای از {class_name} باشد'
+  dataclass_type: 'ورودی باید یک دیکشنری یا نمونه‌ای از {class_name} باشد'
+  date_from_datetime_inexact: بخش زمانِ مقدار تاریخ‌وزمان باید صفر باشد تا به تاریخ تبدیل شود
+  date_from_datetime_parsing: 'ورودی باید یک تاریخ یا تاریخ‌وزمان معتبر باشد: {error}'
+  date_future: تاریخ باید در آینده باشد
+  date_past: تاریخ باید در گذشته باشد
+  date_parsing: 'ورودی باید یک تاریخ معتبر با قالب YYYY-MM-DD باشد: {error}'
+  date_type: ورودی باید یک تاریخ معتبر باشد
+  datetime_future: تاریخ‌وزمان باید در آینده باشد
+  datetime_object_invalid: 'شیء تاریخ‌وزمان نامعتبر است: {error}'
+  datetime_past: تاریخ‌وزمان باید در گذشته باشد
+  datetime_parsing: 'ورودی باید یک تاریخ‌وزمان معتبر باشد: {error}'
+  datetime_type: ورودی باید یک تاریخ‌وزمان معتبر باشد
+  decimal_max_digits: 'عدد ده‌دهی باید در مجموع حداکثر {max_digits} رقم داشته باشد'
+  decimal_max_places: 'عدد ده‌دهی باید حداکثر {decimal_places} رقم اعشار داشته باشد'
+  decimal_parsing: ورودی باید یک عدد ده‌دهی معتبر باشد
+  decimal_type: ورودی ده‌دهی باید عدد صحیح، عدد ممیز شناور، رشته یا شیء Decimal باشد
+  decimal_whole_digits: 'عدد ده‌دهی باید پیش از ممیز حداکثر {whole_digits} رقم داشته باشد'
+  dict_type: ورودی باید یک دیکشنری معتبر باشد
+  email_parsing: 'ورودی باید یک نشانی ایمیل معتبر باشد: {error}'
+  email_type: ورودی باید یک نشانی ایمیل معتبر باشد
+  enum: 'ورودی باید {expected} باشد'
+  extra_forbidden: وارد کردن فیلدهای اضافی مجاز نیست
+  finite_number: ورودی باید یک عدد متناهی باشد
+  float_parsing: ورودی باید یک عدد معتبر باشد؛ تبدیل رشته به عدد ممکن نیست
+  float_type: ورودی باید یک عدد معتبر باشد
+  frozen_field: این فیلد تغییرناپذیر است
+  frozen_instance: این نمونه تغییرناپذیر است
+  frozen_set_type: ورودی باید یک مجموعهٔ تغییرناپذیر معتبر باشد
+  get_attribute_error: 'خطا در استخراج ویژگی: {error}'
+  greater_than: 'ورودی باید بزرگ‌تر از {gt} باشد'
+  greater_than_equal: 'ورودی باید بزرگ‌تر یا مساوی {ge} باشد'
+  int_from_float: ورودی باید یک عدد صحیح معتبر باشد؛ مقدار دریافت‌شده بخش اعشاری دارد
+  int_parsing: ورودی باید یک عدد صحیح معتبر باشد؛ تبدیل رشته به عدد صحیح ممکن نیست
+  int_parsing_size: رشتهٔ ورودی از حد مجاز بزرگ‌تر است و نمی‌توان آن را به عدد صحیح تبدیل کرد
+  int_type: ورودی باید یک عدد صحیح معتبر باشد
+  invalid_key: کلید باید از نوع رشته باشد
+  is_instance_of: 'ورودی باید نمونه‌ای از {class} باشد'
+  is_subclass_of: 'ورودی باید زیرکلاسی از {class} باشد'
+  iteration_error: 'خطا هنگام پیمایش شیء: {error}'
+  iterable_type: ورودی باید یک شیء قابل پیمایش باشد
+  json_invalid: 'JSON نامعتبر است: {error}'
+  json_type: ورودی JSON باید از نوع رشته، بایت یا آرایهٔ بایت باشد
+  less_than: 'ورودی باید کوچک‌تر از {lt} باشد'
+  less_than_equal: 'ورودی باید کوچک‌تر یا مساوی {le} باشد'
+  list_type: ورودی باید یک فهرست معتبر باشد
+  literal_error: 'ورودی باید {expected} باشد'
+  mapping_type: 'ورودی باید یک نگاشت معتبر باشد: {error}'
+  missing: این فیلد الزامی است
+  missing_argument: آرگومان الزامی وارد نشده است
+  missing_keyword_only_argument: آرگومان الزامیِ صرفاً کلیدواژه‌ای وارد نشده است
+  missing_positional_only_argument: آرگومان الزامیِ صرفاً موقعیتی وارد نشده است
+  model_attributes_type: ورودی باید یک دیکشنری معتبر یا شیئی با فیلدهای قابل استخراج باشد
+  model_type: 'ورودی باید یک دیکشنری معتبر یا نمونه‌ای از {class_name} باشد'
+  multiple_argument_values: برای یک آرگومان چند مقدار وارد شده است
+  multiple_of: 'ورودی باید مضربی از {multiple_of} باشد'
+  no_such_attribute: 'شیء ویژگی «{attribute}» را ندارد'
+  none_required: ورودی باید None باشد
+  recursion_loop: خطای بازگشت؛ ارجاع دوری شناسایی شد
+  set_type: ورودی باید یک مجموعهٔ معتبر باشد
+  string_pattern_mismatch: 'رشته باید با الگوی «{pattern}» مطابقت داشته باشد'
+  string_sub_type: ورودی باید رشته باشد، نه نمونه‌ای از زیرکلاس str
+  string_too_long: 'رشته باید حداکثر {max_length} نویسه داشته باشد'
+  string_too_short: 'رشته باید حداقل {min_length} نویسه داشته باشد'
+  string_type: ورودی باید یک رشتهٔ معتبر باشد
+  string_unicode: ورودی باید یک رشتهٔ معتبر باشد؛ تبدیل دادهٔ خام به رشتهٔ یونیکد ممکن نیست
+  time_delta_parsing: 'ورودی باید یک فاصلهٔ زمانی معتبر باشد: {error}'
+  time_delta_type: ورودی باید یک فاصلهٔ زمانی معتبر باشد
+  time_parsing: 'ورودی باید یک زمان با قالب معتبر باشد: {error}'
+  time_type: ورودی باید یک زمان معتبر باشد
+  timezone_aware: ورودی باید اطلاعات منطقهٔ زمانی داشته باشد
+  timezone_naive: ورودی نباید اطلاعات منطقهٔ زمانی داشته باشد
+  timezone_offset: 'اختلاف زمانی باید {tz_expected} باشد، اما مقدار {tz_actual} دریافت شد'
+  too_long: '{field_type} پس از اعتبارسنجی باید حداکثر {max_length} عضو داشته باشد، نه {actual_length} عضو'
+  too_short: '{field_type} پس از اعتبارسنجی باید حداقل {min_length} عضو داشته باشد، نه {actual_length} عضو'
+  tuple_type: ورودی باید یک تاپل معتبر باشد
+  union_tag_invalid: 'برچسب «{tag}» که با {discriminator} پیدا شد، با هیچ‌یک از برچسب‌های مورد انتظار مطابقت ندارد: {expected_tags}'
+  union_tag_not_found: 'استخراج برچسب با استفاده از تمایزدهندهٔ {discriminator} ممکن نیست'
+  unexpected_keyword_argument: آرگومان کلیدواژه‌ای غیرمنتظره است
+  unexpected_positional_argument: آرگومان موقعیتی غیرمنتظره است
+  url_parsing: 'ورودی باید یک URL معتبر باشد: {error}'
+  url_scheme: 'طرح URL باید {expected_schemes} باشد'
+  url_syntax_violation: 'ورودی با قواعد سخت‌گیرانهٔ ساختار URL مطابقت ندارد: {error}'
+  url_too_long: 'URL باید حداکثر {max_length} نویسه داشته باشد'
+  url_type: ورودی URL باید از نوع رشته یا URL باشد
+  uuid_parsing: 'ورودی باید یک UUID معتبر باشد: {error}'
+  uuid_type: ورودی UUID باید رشته، بایت یا شیء UUID باشد
+  uuid_version: 'نسخهٔ UUID باید {expected_version} باشد'
+  value_error: 'خطای مقدار: {error}'
+response:
+  error: درخواست با خطا مواجه شد
+  success: درخواست با موفقیت انجام شد
+success:
+  login:
+    oauth2_success: ورود با موفقیت انجام شد (OAuth2)
+    success: ورود با موفقیت انجام شد

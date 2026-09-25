@@ -20,11 +20,11 @@ from backend.utils.timezone import timezone
 
 
 class PluginService:
-    """插件服务类"""
+    """Plugin service"""
 
     @staticmethod
     async def get_all() -> list[dict[str, Any]]:
-        """获取所有插件"""
+        """Get all plugins"""
 
         changed_key = f'{settings.PLUGIN_REDIS_PREFIX}:changed'
         keys = [key for key in await redis_client.get_by_prefix(settings.PLUGIN_REDIS_PREFIX) if key != changed_key]
@@ -45,44 +45,44 @@ class PluginService:
 
     @staticmethod
     async def changed() -> str | None:
-        """检查插件是否发生变更"""
+        """Check whether plugins have changed"""
         return await redis_client.get(f'{settings.PLUGIN_REDIS_PREFIX}:changed')
 
     @staticmethod
     async def install(*, type: PluginType, file: UploadFile | None = None, repo_url: str | None = None) -> str:
         """
-        安装插件
+        Install plugin
 
-        :param type: 插件类型
-        :param file: 插件 zip 压缩包
-        :param repo_url: git 仓库地址
+        :param type: Plugin type
+        :param file: Plugin ZIP archive
+        :param repo_url: Git repository URL
         :return:
         """
         if settings.ENVIRONMENT != 'dev':
-            raise errors.RequestError(msg='禁止在非开发环境下安装插件')
+            raise errors.RequestError(msg='Plugins can only be installed in the development environment')
         if type == PluginType.zip:
             if not file:
-                raise errors.RequestError(msg='ZIP 压缩包不能为空')
+                raise errors.RequestError(msg='ZIP archive must not be empty')
             return await install_zip_plugin(file)
         if not repo_url:
-            raise errors.RequestError(msg='Git 仓库地址不能为空')
+            raise errors.RequestError(msg='Git repository URL must not be empty')
         return await install_git_plugin(repo_url)
 
     @staticmethod
     async def uninstall(*, plugin: str) -> None:
         """
-        卸载插件
+        Uninstall plugin
 
-        :param plugin: 插件名称
+        :param plugin: Plugin name
         :return:
         """
         if settings.ENVIRONMENT != 'dev':
-            raise errors.RequestError(msg='禁止在非开发环境下卸载插件')
+            raise errors.RequestError(msg='Plugins can only be uninstalled in the development environment')
         if plugin in get_required_plugins():
-            raise errors.RequestError(msg=f'插件 {plugin} 为必需插件，禁止卸载')
+            raise errors.RequestError(msg=f'Plugin {plugin} is required and cannot be uninstalled')
         plugin_dir = anyio.Path(PLUGIN_DIR / plugin)
         if not await plugin_dir.exists():
-            raise errors.NotFoundError(msg='插件不存在')
+            raise errors.NotFoundError(msg='Plugin does not exist')
         await uninstall_requirements_async(plugin)
         backup_file = PLUGIN_DIR / f'{plugin}.{timezone.now().strftime("%Y%m%d%H%M%S")}.backup.zip'
         await run_in_threadpool(zip_plugin, plugin_dir, backup_file)
@@ -93,18 +93,18 @@ class PluginService:
     @staticmethod
     async def update_status(*, plugin: str) -> None:
         """
-        更新插件状态
+        Update plugin status
 
-        :param plugin: 插件名称
+        :param plugin: Plugin name
         :return:
         """
         plugin_key = f'{settings.PLUGIN_REDIS_PREFIX}:{plugin}'
         plugin_info = await redis_client.get(plugin_key)
         if not plugin_info:
-            raise errors.NotFoundError(msg='插件不存在')
+            raise errors.NotFoundError(msg='Plugin does not exist')
         plugin_info = json.loads(plugin_info)
 
-        # 更新持久缓存状态
+        # Update persistent cache status
         new_status = (
             str(StatusType.enable.value)
             if plugin_info['plugin']['enable'] == str(StatusType.disable.value)
@@ -117,14 +117,14 @@ class PluginService:
     @staticmethod
     async def build(*, plugin: str) -> io.BytesIO:
         """
-        打包插件为 zip 压缩包
+        Package plugin as a ZIP archive
 
-        :param plugin: 插件名称
+        :param plugin: Plugin name
         :return:
         """
         plugin_dir = anyio.Path(PLUGIN_DIR / plugin)
         if not await plugin_dir.exists():
-            raise errors.NotFoundError(msg='插件不存在')
+            raise errors.NotFoundError(msg='Plugin does not exist')
 
         bio = io.BytesIO()
         await run_in_threadpool(zip_plugin, plugin_dir, bio)

@@ -8,33 +8,33 @@ from backend.common.schema import SchemaBase
 
 
 class TaskResultSchemaBase(SchemaBase):
-    """任务结果基础模型"""
+    """Task result base schema"""
 
-    task_id: str = Field(description='任务 ID')
-    status: str = Field(description='执行状态')
-    result: Any | None = Field(description='执行结果')
-    date_done: datetime | None = Field(description='结束时间')
-    traceback: str | None = Field(description='错误回溯')
-    name: str | None = Field(description='任务名称')
-    args: bytes | None = Field(description='任务位置参数')
-    kwargs: bytes | None = Field(description='任务关键字参数')
-    worker: str | None = Field(description='运行 Worker')
-    retries: int | None = Field(description='重试次数')
-    queue: str | None = Field(description='运行队列')
+    task_id: str = Field(description='Task ID')
+    status: str = Field(description='Execution status')
+    result: Any | None = Field(description='Execution result')
+    date_done: datetime | None = Field(description='End time')
+    traceback: str | None = Field(description='Error traceback')
+    name: str | None = Field(description='Task name')
+    args: bytes | None = Field(description='Task positional arguments')
+    kwargs: bytes | None = Field(description='Task keyword arguments')
+    worker: str | None = Field(description='Worker running the task')
+    retries: int | None = Field(description='Retry count')
+    queue: str | None = Field(description='Execution queue')
 
 
 class DeleteTaskResultParam(SchemaBase):
-    """删除任务结果参数"""
+    """Task result deletion parameters"""
 
-    pks: list[int] = Field(description='任务结果 ID 列表')
+    pks: list[int] = Field(description='Task result ID list')
 
 
 class GetTaskResultDetail(TaskResultSchemaBase):
-    """任务结果详情"""
+    """Task result details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(description='任务结果 ID')
+    id: int = Field(description='Task result ID')
 
     @field_serializer('args', 'kwargs', when_used='unless-none')
     def serialize_params(self, value: bytes | None) -> Any:

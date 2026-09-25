@@ -6,7 +6,7 @@
 
 Enterprise-level backend architecture solution
 
-English | [简体中文](./README.zh-CN.md)
+English | [Simplified Chinese](./README.zh-CN.md) | [فارسی](./README.fa-IR.md)
 
 [![GitHub](https://img.shields.io/github/license/fastapi-practices/fastapi_best_architecture)](https://github.com/fastapi-practices/fastapi_best_architecture/blob/master/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
@@ -25,24 +25,30 @@ English | [简体中文](./README.zh-CN.md)
 
 ## Three-tier architecture
 
-The MVC architecture is common in Python Web as a general design pattern, but the three-tier architecture is more
-fascinating
+MVC is a common design pattern in Python web applications. This project uses a three-tier architecture
+with an opinionated directory structure instead of a traditional multi-app layout, such as those used in
+Django or Spring Boot. You can adapt the structure to suit your project.
 
-However, please note that we do not have a traditional multi-app (microservices) directory structure (django,
-springBoot...). ), but a self-righteous directory structure that you can give it any twist if you don't like this model!
-
-| workflow       | java           | fastapi_best_architecture |
+| Workflow       | Java           | fastapi_best_architecture |
 |----------------|----------------|---------------------------|
-| view           | controller     | api                       |
-| data transmit  | dto            | schema                    |
-| business logic | service + impl | service                   |
-| data access    | dao / mapper   | crud                      |
-| model          | model / entity | model                     |
+| View           | controller     | api                       |
+| Data transfer  | dto            | schema                    |
+| Business logic | service + impl | service                   |
+| Data access    | dao / mapper   | crud                      |
+| Model          | model / entity | model                     |
 
 ## Help
 
 For more details, please check
 the [official documentation](https://fastapi-practices.github.io/fastapi_best_architecture_docs/)
+
+## Languages
+
+The README is available in English, [Simplified Chinese](./README.zh-CN.md), and [Persian (Farsi)](./README.fa-IR.md).
+For localized API response and validation messages, send `Accept-Language: en-US`, `zh-CN`, or `fa-IR`.
+The short codes `en`, `zh`, and `fa` are also supported. Configure `I18N_DEFAULT_LANGUAGE` to choose the
+language used when the header is absent; the existing default is `zh-CN`.
+Developer documentation, API descriptions, and messages outside the locale system are in English.
 
 ## Sponsors
 

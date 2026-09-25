@@ -18,7 +18,7 @@ R = TypeVar('R', bound=RowData)
 
 class MsgSpecJSONResponse(JSONResponse):
     """
-    使用高性能的 msgspec 库将数据序列化为 JSON 的响应类
+    Response class serializing data as JSON with the high-performance msgspec library
     """
 
     def render(self, content: Any) -> bytes:
@@ -27,9 +27,9 @@ class MsgSpecJSONResponse(JSONResponse):
 
 def select_columns_serialize(row: R) -> dict[str, Any]:
     """
-    序列化 SQLAlchemy 查询表的列，不包含关联列
+    Serialize SQLAlchemy query table columns, excluding relationships
 
-    :param row: SQLAlchemy 查询结果行
+    :param row: SQLAlchemy query result row
     :return:
     """
     result = {}
@@ -43,9 +43,9 @@ def select_columns_serialize(row: R) -> dict[str, Any]:
 
 def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
     """
-    序列化 SQLAlchemy 查询列表
+    Serialize SQLAlchemy query list
 
-    :param row: SQLAlchemy 查询结果列表
+    :param row: SQLAlchemy query result list
     :return:
     """
     return [select_columns_serialize(item) for item in row]
@@ -53,10 +53,10 @@ def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
 
 def select_as_dict(row: R, *, use_alias: bool = False) -> dict[str, Any]:
     """
-    将 SQLAlchemy 查询结果转换为字典，可以包含关联数据
+    Convert SQLAlchemy query results to dictionaries, optionally including related data
 
-    :param row: SQLAlchemy 查询结果行
-    :param use_alias: 是否使用别名作为列名
+    :param row: SQLAlchemy query result row
+    :param use_alias: Whether to use aliases as column names
     :return:
     """
     if not use_alias:
@@ -81,26 +81,26 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
     return_as_dict: bool = False,
 ) -> dict[str, Any] | list[dict[str, Any]] | tuple[Any, ...] | list[tuple[Any, ...]] | None:
     """
-    将 SQLAlchemy 连接查询结果序列化为字典或 namedtuple
+    Serialize SQLAlchemy join query results as dictionaries or namedtuples
 
-    扁平序列化（relationships=None）：
-        所有结果平铺到同一层级，不嵌套
-        例：Result(name='Alice', dept=Dept(...))
+    Flat serialization (relationships=None):
+        Flatten all results to a single level without nesting
+        Example: Result(name='Alice', dept=Dept(...))
 
-    嵌套序列化：
-        根据关系类型嵌套组织数据，支持层级结构
-        例：relationships=['User-m2o-Dept', 'User-m2m-Role:permissions']
-        输出：Result(name='Alice', dept=Dept(...), permissions=[Role(...)])
+    Nested serialization:
+        Organize data by relationship type, supporting nested hierarchies
+        Example: relationships=['User-m2o-Dept', 'User-m2m-Role:permissions']
+        Output: Result(name='Alice', dept=Dept(...), permissions=[Role(...)])
 
-    关系格式：source_model-type-target_model[:custom_name]
-        - type: o2m(一对多), m2o(多对一), o2o(一对一), m2m(多对多)
-        - o2m/m2m: 目标字段名自动加 's' 复数化
-        - m2o/o2o: 目标字段名保持单数
-        - custom_name: 自定义目标字段名
+    Relationship format: source_model-type-target_model[:custom_name]
+        - type: o2m (one-to-many), m2o (many-to-one), o2o (one-to-one), m2m (many-to-many)
+        - o2m/m2m: Append 's' to pluralize the target field name
+        - m2o/o2o: Keep the target field name singular
+        - custom_name: Custom target field name
 
-    :param row: SQLAlchemy 查询结果
-    :param relationships: 关系定义列表
-    :param return_as_dict: True 返回字典，False 返回 namedtuple
+    :param row: SQLAlchemy query result
+    :param relationships: List of relationship definitions
+    :param return_as_dict: True returns dictionaries; False returns namedtuples
     :return:
     """
     list_relationship_types = {'o2m', 'm2m'}
@@ -174,7 +174,7 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
                 data[field] = None
         return namedtuple_cache[name](**data)
 
-    # 输入验证
+    # Input validation
     if not row:
         return None
 
@@ -182,7 +182,7 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
     if not rows_list:
         return None
 
-    # 主对象信息
+    # Primary object information
     first_row = extract_row_elements(rows_list[0])
     primary_obj = first_row[0]
     if primary_obj is None:
@@ -191,11 +191,11 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
     primary_obj_name = type(primary_obj).__name__.lower()
     primary_columns = get_model_columns(primary_obj)
 
-    # 关系解析
+    # Parse relationships
     relation_graph, reverse_relation, custom_names = parse_relationships(relationships or [])
     has_relationships = bool(relation_graph)
 
-    # 预处理模型信息
+    # Preprocess model information
     model_info = {}
     cls_idx = {}
 
@@ -210,7 +210,7 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
             if element_cls not in cls_idx:
                 cls_idx[element_cls] = idx
 
-    # 数据分组
+    # Group data
     main_objects = {}
     children_objects = defaultdict(lambda: defaultdict(list))
 
@@ -234,7 +234,7 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
     if not main_objects:
         return None
 
-    # namedtuple 类型预生成
+    # Pre-create namedtuple types
     namedtuple_cache = {}
     if not return_as_dict:
         for model_name, model_columns in model_info.items():
@@ -250,7 +250,7 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
 
             namedtuple_cache[model_name] = namedtuple(model_name.capitalize(), field_list)  # ruff:ignore[collections-named-tuple]
 
-    # 嵌套关系层级结构（一次性构建）
+    # Nested relationship hierarchy (built once)
     hierarchy = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
     if has_relationships:
@@ -286,7 +286,7 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
                 if parent_pk is not None:
                     hierarchy[main_id][rel_type_name][parent_pk].append(rel_obj)
 
-    # 结果构建函数
+    # Result builder function
     def build_flat(target_id: int, target_obj: Any) -> dict[str, Any]:
         result = {col: getattr(target_obj, col, None) for col in primary_columns}
 
@@ -360,7 +360,7 @@ def select_join_serialize(  # ruff:ignore[complex-structure]
 
         return result
 
-    # 最终结果构建
+    # Build final results
     final_results = []
     processed_ids = set()
 

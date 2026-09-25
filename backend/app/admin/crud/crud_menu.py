@@ -10,35 +10,35 @@ from backend.utils.timezone import timezone
 
 
 class CRUDMenu(CRUDPlus[Menu]):
-    """菜单数据库操作类"""
+    """Menu database operations"""
 
     async def get(self, db: AsyncSession, menu_id: int) -> Menu | None:
         """
-        获取菜单详情
+        Get menu details
 
-        :param db: 数据库会话
-        :param menu_id: 菜单 ID
+        :param db: Database session
+        :param menu_id: Menu ID
         :return:
         """
         return await self.select_model(db, menu_id, deleted=0)
 
     async def get_by_title(self, db: AsyncSession, title: str) -> Menu | None:
         """
-        通过标题获取菜单
+        Get menu by title
 
-        :param db: 数据库会话
-        :param title: 菜单标题
+        :param db: Database session
+        :param title: Menu title
         :return:
         """
         return await self.select_model_by_column(db, title=title, type__ne=2, deleted=0)
 
     async def get_all(self, db: AsyncSession, title: str | None, status: int | None) -> Sequence[Menu]:
         """
-        获取菜单列表
+        Get menu list
 
-        :param db: 数据库会话
-        :param title: 菜单标题
-        :param status: 菜单状态
+        :param db: Database session
+        :param title: Menu title
+        :param status: Menu status
         :return:
         """
         filters = {'deleted': 0}
@@ -52,10 +52,10 @@ class CRUDMenu(CRUDPlus[Menu]):
 
     async def get_sidebar(self, db: AsyncSession, menu_ids: list[int] | None) -> Sequence[Menu]:
         """
-        获取用户的菜单侧边栏
+        Get user sidebar menus
 
-        :param db: 数据库会话
-        :param menu_ids: 菜单 ID 列表
+        :param db: Database session
+        :param menu_ids: Menu ID list
         :return:
         """
         filters = {'type__in': [0, 1, 3, 4], 'deleted': 0}
@@ -67,41 +67,41 @@ class CRUDMenu(CRUDPlus[Menu]):
 
     async def get_all_by_ids(self, db: AsyncSession, menu_ids: list[int]) -> Sequence[Menu]:
         """
-        通过 ID 列表批量获取菜单
+        Get menus in bulk by ID list
 
-        :param db: 数据库会话
-        :param menu_ids: 菜单 ID 列表
+        :param db: Database session
+        :param menu_ids: Menu ID list
         :return:
         """
         return await self.select_models(db, id__in=menu_ids, deleted=0)
 
     async def create(self, db: AsyncSession, obj: CreateMenuParam) -> None:
         """
-        创建菜单
+        Create menu
 
-        :param db: 数据库会话
-        :param obj: 创建菜单参数
+        :param db: Database session
+        :param obj: Menu creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, menu_id: int, obj: UpdateMenuParam) -> int:
         """
-        更新菜单
+        Update menu
 
-        :param db: 数据库会话
-        :param menu_id: 菜单 ID
-        :param obj: 更新菜单参数
+        :param db: Database session
+        :param menu_id: Menu ID
+        :param obj: Menu update parameters
         :return:
         """
         return await self.update_model_by_column(db, obj, id=menu_id, deleted=0)
 
     async def delete(self, db: AsyncSession, menu_id: int) -> int:
         """
-        删除菜单
+        Delete menu
 
-        :param db: 数据库会话
-        :param menu_id: 菜单 ID
+        :param db: Database session
+        :param menu_id: Menu ID
         :return:
         """
         role_menu_stmt = delete(role_menu).where(role_menu.c.menu_id == menu_id)
@@ -120,10 +120,10 @@ class CRUDMenu(CRUDPlus[Menu]):
 
     async def get_children(self, db: AsyncSession, menu_id: int) -> Sequence[Menu | None]:
         """
-        获取子菜单列表
+        Get child menus
 
-        :param db: 数据库会话
-        :param menu_id: 菜单 ID
+        :param db: Database session
+        :param menu_id: Menu ID
         :return:
         """
         return await self.select_models(db, parent_id=menu_id, deleted=0)

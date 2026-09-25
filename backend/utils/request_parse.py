@@ -14,9 +14,9 @@ from backend.database.redis import redis_client
 
 def get_request_ip(request: Request) -> str:
     """
-    获取请求的 IP 地址
+    Get request IP address
 
-    :param request: FastAPI 请求对象
+    :param request: FastAPI request object
     :return:
     """
     real = request.headers.get('X-Real-IP')
@@ -30,7 +30,7 @@ def get_request_ip(request: Request) -> str:
     if request.client is None:
         return '127.0.0.1'
 
-    # 忽略 pytest
+    # Skip pytest
     if request.client.host == 'testclient':
         return '127.0.0.1'
 
@@ -39,9 +39,9 @@ def get_request_ip(request: Request) -> str:
 
 async def get_location_online(ip: str) -> dict | None:
     """
-    在线获取 IP 地址属地，无法保证可用性，准确率较高
+    Look up IP geolocation online; availability is not guaranteed, but accuracy is relatively high
 
-    :param ip: IP 地址
+    :param ip: IP address
     :return:
     """
     async with httpx.AsyncClient(timeout=3) as client:
@@ -50,27 +50,27 @@ async def get_location_online(ip: str) -> dict | None:
             if response.status_code == 200:
                 return response.json()
         except Exception as e:
-            log.error(f'在线获取 IP 地址属地失败，错误信息：{e}')
+            log.error(f'Online IP geolocation lookup failed: {e}')
             return None
 
 
-# 离线 IP 搜索器（数据将缓存到内存，缓存大小取决于 IP 数据文件大小）
+# Offline IP searcher (data is cached in memory; cache size depends on the IP data file size)
 __c_buffer: bytes = ip2region_util.load_content_from_file(STATIC_DIR / 'ip2region_v4.xdb')
 __xdb_searcher: ip2region_xdb.Searcher = ip2region_xdb.new_with_buffer(ip2region_util.IPv4, __c_buffer)
 
 
 def get_location_offline(ip: str) -> dict | None:
     """
-    离线获取 IP 地址属地，无法保证准确率，100% 可用
+    Look up IP geolocation offline; accuracy is not guaranteed, but it is always available
 
-    :param ip: IP 地址
+    :param ip: IP address
     :return:
     """
     try:
         data = __xdb_searcher.search(ip)
         country, region_name, city, *_ = data.split('|')
     except Exception as e:
-        log.error(f'离线获取 IP 地址属地失败：{e}')
+        log.error(f'Offline IP geolocation lookup failed: {e}')
         return None
     else:
         return {
@@ -82,9 +82,9 @@ def get_location_offline(ip: str) -> dict | None:
 
 async def parse_ip_info(request: Request) -> IpInfo:
     """
-    解析请求的 IP 信息
+    Parse request IP information
 
-    :param request: FastAPI 请求对象
+    :param request: FastAPI request object
     :return:
     """
     country, region, city = None, None, None
@@ -114,9 +114,9 @@ async def parse_ip_info(request: Request) -> IpInfo:
 
 def parse_user_agent_info(request: Request) -> UserAgentInfo:
     """
-    解析请求的用户代理信息
+    Parse request user agent information
 
-    :param request: FastAPI 请求对象
+    :param request: FastAPI request object
     :return:
     """
     os, browser, device = None, None, None

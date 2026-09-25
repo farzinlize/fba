@@ -2,14 +2,14 @@ from backend.common.enums import IntEnum, StrEnum
 
 
 class TaskSchedulerType(IntEnum):
-    """任务调度类型"""
+    """Task schedule type"""
 
     INTERVAL = 0
     CRONTAB = 1
 
 
 class PeriodType(StrEnum):
-    """周期类型"""
+    """Period type"""
 
     DAYS = 'days'
     HOURS = 'hours'

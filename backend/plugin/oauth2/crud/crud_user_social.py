@@ -9,57 +9,57 @@ from backend.utils.timezone import timezone
 
 
 class CRUDUserSocial(CRUDPlus[UserSocial]):
-    """用户社交账号数据库操作类"""
+    """User social account database operations"""
 
     async def check_binding(self, db: AsyncSession, user_id: int, source: str) -> UserSocial | None:
         """
-        检查系统用户社交账号绑定
+        Check system user social account association
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
-        :param source: 社交账号类型
+        :param db: Database session
+        :param user_id: User ID
+        :param source: Social account type
         :return:
         """
         return await self.select_model_by_column(db, user_id=user_id, source=source, deleted=0)
 
     async def get_by_sid(self, db: AsyncSession, sid: str, source: str) -> UserSocial | None:
         """
-        通过 sid 获取社交用户
+        Get social user by sid
 
-        :param db: 数据库会话
-        :param sid: 社交账号唯一编码
-        :param source: 社交账号类型
+        :param db: Database session
+        :param sid: Unique social account identifier
+        :param source: Social account type
         :return:
         """
         return await self.select_model_by_column(db, sid=sid, source=source, deleted=0)
 
     async def get_by_user_id(self, db: AsyncSession, user_id: int) -> Sequence[UserSocial]:
         """
-        通过用户 ID 获取所有社交账号绑定
+        Get all social account associations by user ID
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
+        :param db: Database session
+        :param user_id: User ID
         :return:
         """
         return await self.select_models(db, user_id=user_id, deleted=0)
 
     async def create(self, db: AsyncSession, obj: CreateUserSocialParam) -> None:
         """
-        创建用户社交账号绑定
+        Create user social account association
 
-        :param db: 数据库会话
-        :param obj: 创建用户社交账号绑定参数
+        :param db: Database session
+        :param obj: User social account association creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def delete(self, db: AsyncSession, user_id: int, source: str) -> int:
         """
-        删除用户社交账号绑定
+        Delete user social account association
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
-        :param source: 社交账号类型
+        :param db: Database session
+        :param user_id: User ID
+        :param source: Social account type
         :return:
         """
         return await self.delete_model_by_column(
@@ -76,10 +76,10 @@ class CRUDUserSocial(CRUDPlus[UserSocial]):
 
     async def delete_by_user_id(self, db: AsyncSession, user_id: int) -> int:
         """
-        通过用户 ID 删除用户社交
+        Delete social accounts by user ID
 
-        :param db: 数据库会话
-        :param user_id: 用户 ID
+        :param db: Database session
+        :param user_id: User ID
         :return:
         """
         return await self.delete_model_by_column(

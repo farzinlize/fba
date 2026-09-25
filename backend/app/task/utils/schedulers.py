@@ -31,17 +31,17 @@ from backend.utils.timezone import timezone
 if TYPE_CHECKING:
     from redis.asyncio.lock import Lock
 
-# 此计划程序必须比常规的 5 分钟更频繁地唤醒，因为它需要考虑对计划的外部更改
+# This scheduler must wake more often than the usual five minutes to account for external schedule changes
 _DEFAULT_MAX_INTERVAL: Final = 5  # seconds
 
-# 计划锁时长，避免重复创建
+# Schedule lock duration to prevent duplicate creation
 _DEFAULT_MAX_LOCK_TIMEOUT: Final = _DEFAULT_MAX_INTERVAL * 5  # seconds
 
 logger = get_logger('fba.schedulers')
 
 
 class ModelEntry(ScheduleEntry):
-    """任务调度实体"""
+    """Task schedule entry"""
 
     def __init__(self, model: TaskScheduler, app=None) -> None:  # ruff:ignore[missing-type-function-argument, complex-structure]
         super().__init__(
@@ -59,17 +59,17 @@ class ModelEntry(ScheduleEntry):
             elif model.type == TaskSchedulerType.CRONTAB and model.crontab is not None:
                 self.schedule = TzAwareCrontab.from_string(model.crontab)
             else:
-                raise errors.NotFoundError(msg=f'{self.name} 计划为空！')
+                raise errors.NotFoundError(msg=f'Schedule for {self.name} is empty!')
             # logger.debug('Schedule: {}'.format(self.schedule))
         except Exception as e:
-            logger.error(f'禁用计划为空的任务 {self.name}，详情：{e}')
+            logger.error(f'Disabling task {self.name} because its schedule is empty; details: {e}')
             asyncio.create_task(self._disable(model))
 
         try:
             self.args = json.loads(model.args) if model.args else None
             self.kwargs = json.loads(model.kwargs) if model.kwargs else None
         except ValueError as exc:
-            logger.error(f'禁用参数错误的任务：{self.name}；error: {exc!s}')
+            logger.error(f'Disabling task {self.name} because its arguments are invalid; error: {exc!s}')
             asyncio.create_task(self._disable(model))
 
         self.options = {}
@@ -95,7 +95,7 @@ class ModelEntry(ScheduleEntry):
         self.enabled = model.status == StatusType.enable
 
     async def _disable(self, model: TaskScheduler) -> None:
-        """禁用任务"""
+        """Disable task"""
         model.no_changes = True
         self.model.status = model.status = StatusType.disable
         self.enabled = False
@@ -108,12 +108,12 @@ class ModelEntry(ScheduleEntry):
                 task.status = StatusType.disable
 
     def is_due(self) -> tuple[bool, int | float | datetime]:
-        """任务到期状态"""
+        """Task expiration status"""
         if self.model.status != StatusType.enable:
-            # 重新启用时延迟 5 秒
+            # Delay five seconds when re-enabled
             return schedules.schedstate(is_due=False, next=5)
 
-        # 仅在 'start_time' 之后运行
+        # Run only after 'start_time'
         if self.model.start_time is not None:
             now = timezone.now()
             start_time = timezone.from_datetime(self.model.start_time)
@@ -121,14 +121,14 @@ class ModelEntry(ScheduleEntry):
                 delay = math.ceil((start_time - now).total_seconds())
                 return schedules.schedstate(is_due=False, next=delay)
 
-        # 一次性任务
+        # One-time task
         if self.model.one_off and self.model.status == StatusType.enable and self.model.total_run_count > 0:
             self.model.status = StatusType.disable
             self.model.total_run_count = 0
             self.model.no_changes = False
             save_fields = ('status',)
             run_await(self.save)(save_fields)
-            return schedules.schedstate(is_due=False, next=1000000000)  # 高延迟，避免重新检查
+            return schedules.schedstate(is_due=False, next=1000000000)  # Long delay to avoid rechecking
 
         return self.schedule.is_due(self.last_run_at)
 
@@ -142,9 +142,9 @@ class ModelEntry(ScheduleEntry):
 
     async def save(self, fields: tuple = ()) -> None:
         """
-        保存任务状态字段
+        Save task state fields
 
-        :param fields: 要保存的其他字段
+        :param fields: Additional fields to save
         :return:
         """
         async with async_db_session.begin() as db:
@@ -161,11 +161,11 @@ class ModelEntry(ScheduleEntry):
                 for field in fields:
                     setattr(task, field, getattr(self.model, field))
             else:
-                logger.warning(f'任务 {self.model.name} 不存在，跳过更新')
+                logger.warning(f'Task {self.model.name} does not exist; skipping update')
 
     @classmethod
     async def from_entry(cls, name, app=None, **entry) -> ModelEntry:  # ruff:ignore[missing-type-function-argument]
-        """保存或更新本地任务调度"""
+        """Save or update local task schedule"""
         async with async_db_session.begin() as db:
             stmt = select(TaskScheduler).where(TaskScheduler.name == name, TaskScheduler.deleted == 0)
             query = await db.execute(stmt)
@@ -212,7 +212,7 @@ class ModelEntry(ScheduleEntry):
                 if not obj:
                     obj = TaskScheduler(**CreateTaskSchedulerParam(task=task, **spec).model_dump())
             else:
-                raise errors.NotFoundError(msg=f'暂不支持的计划类型：{schedule}')
+                raise errors.NotFoundError(msg=f'Unsupported schedule type: {schedule}')
 
             return obj
 
@@ -277,7 +277,7 @@ class ModelEntry(ScheduleEntry):
 
 
 class DatabaseScheduler(Scheduler):
-    """数据库调度程序"""
+    """Database scheduler"""
 
     Entry = ModelEntry
 
@@ -297,28 +297,28 @@ class DatabaseScheduler(Scheduler):
         self.max_interval = kwargs.get('max_interval') or self.app.conf.beat_max_loop_interval or _DEFAULT_MAX_INTERVAL
 
     def schedules_equal(self, *args, **kwargs) -> bool:
-        """重写父函数"""
+        """Override parent method"""
         if self._heap_invalidated:
             self._heap_invalidated = False
             return False
         return super().schedules_equal(*args, **kwargs)
 
     def reserve(self, entry):  # ruff:ignore[missing-type-function-argument, missing-return-type-undocumented-public-function]
-        """重写父函数"""
+        """Override parent method"""
         new_entry = next(entry)
-        # 需要按名称存储条目，因为条目可能会发生变化
+        # Store entries by name because the entries may change
         self._dirty.add(new_entry.name)
         return new_entry
 
     def setup_schedule(self) -> None:
-        """重写父函数"""
+        """Override parent method"""
         logger.info('setup_schedule')
         tasks = self.schedule
         self.install_default_entries(tasks)
         self.update_from_dict(self.app.conf.beat_schedule)
 
     def sync(self) -> None:
-        """重写父函数"""
+        """Override parent method"""
         tried = set()
         failed = set()
         try:
@@ -327,21 +327,21 @@ class DatabaseScheduler(Scheduler):
                 try:
                     tasks = self.schedule
                     run_await(tasks[name].save)()
-                    logger.debug(f'保存任务 {name} 最新状态到数据库')
+                    logger.debug(f'Saving latest state of task {name} to the database')
                     tried.add(name)
                 except KeyError as e:
-                    logger.error(f'保存任务 {name} 最新状态失败：{e} ')
+                    logger.error(f'Failed to save latest state of task {name}: {e} ')
                     failed.add(name)
         except DatabaseError:
-            logger.exception('同步时出现数据库错误')
+            logger.exception('Database error during synchronization')
         except InterfaceError as e:
-            logger.warning(f'DatabaseScheduler InterfaceError：{e!s}，等待下次调用时重试...')
+            logger.warning(f'DatabaseScheduler InterfaceError: {e!s}; will retry on the next call...')
         finally:
-            # 请稍后重试（仅针对失败的）
+            # Retry later (failed entries only)
             self._dirty |= failed
 
     def tick(self, **kwargs) -> float:
-        """重写父函数"""
+        """Override parent method"""
         if self.lock:
             logger.debug('beat: Extending lock...')
             run_await(self.lock.extend)(_DEFAULT_MAX_LOCK_TIMEOUT, replace_ttl=True)
@@ -349,7 +349,7 @@ class DatabaseScheduler(Scheduler):
         return super().tick(**kwargs)
 
     def close(self) -> None:
-        """重写父函数"""
+        """Override parent method"""
         if self.lock:
             logger.info('beat: Releasing lock')
             if run_await(self.lock.owned)():
@@ -359,7 +359,7 @@ class DatabaseScheduler(Scheduler):
         super().close()
 
     def update_from_dict(self, beat_dict: dict) -> None:
-        """重写父函数"""
+        """Override parent method"""
         s = {}
         name = None
         try:
@@ -368,14 +368,14 @@ class DatabaseScheduler(Scheduler):
                 if entry.model.status == StatusType.enable:
                     s[name] = entry
         except Exception:
-            logger.error(f'添加任务 {name} 到数据库失败')
+            logger.error(f'Failed to add task {name} to the database')
             raise
 
         tasks = self.schedule
         tasks.update(s)
 
     def schedule_changed(self) -> bool | None:
-        """任务调度变更状态"""
+        """Task schedule change status"""
         now = timezone.now()
         last_update_key = f'{settings.CELERY_REDIS_PREFIX}:last_update'
         last_update = run_await(redis_client.get)(last_update_key)
@@ -391,7 +391,7 @@ class DatabaseScheduler(Scheduler):
             self._last_update = now
 
     async def get_all_task_schedulers(self) -> dict:
-        """获取所有任务调度"""
+        """Get all task schedules"""
         async with async_db_session() as db:
             logger.debug('DatabaseScheduler: Fetching database schedule')
             stmt = select(TaskScheduler).where(
@@ -407,7 +407,7 @@ class DatabaseScheduler(Scheduler):
 
     @property
     def schedule(self) -> dict[str, ModelEntry]:
-        """获取任务调度"""
+        """Get task schedule"""
         initial = update = False
         if self._initial_read:
             logger.debug('DatabaseScheduler: initial read')
@@ -421,7 +421,7 @@ class DatabaseScheduler(Scheduler):
             logger.debug('beat: Synchronizing schedule...')
             self.sync()
             self._schedule = run_await(self.get_all_task_schedulers)()
-            # 计划已更改，使 Scheduler.tick 中的堆无效
+            # Schedule changed; invalidate the heap in Scheduler.tick
             if not initial:
                 self._heap = []
                 self._heap_invalidated = True
@@ -437,9 +437,9 @@ class DatabaseScheduler(Scheduler):
 @beat_init.connect
 def acquire_distributed_beat_lock(sender=None, **kwargs) -> None:  # ruff:ignore[missing-type-function-argument]
     """
-    尝试在启动时获取锁
+    Try to acquire the lock at startup
 
-    :param sender: 接收方应响应的发送方
+    :param sender: Sender to which the receiver should respond
     :return:
     """
     scheduler = sender.scheduler

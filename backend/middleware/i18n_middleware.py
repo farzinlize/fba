@@ -9,9 +9,9 @@ from backend.core.conf import settings
 
 def get_current_language(request: Request) -> str | None:
     """
-    获取当前请求的语言偏好
+    Get the language preference for the current request
 
-    :param request: FastAPI 请求对象
+    :param request: FastAPI request object
     :return:
     """
     accept_language = request.headers.get('Accept-Language', '')
@@ -21,32 +21,34 @@ def get_current_language(request: Request) -> str | None:
     languages = [lang.split(';')[0] for lang in accept_language.split(',')]
     lang = languages[0].lower().strip()
 
-    # 语言映射
+    # Language mapping
     lang_mapping = {
         'zh': 'zh-CN',
         'zh-cn': 'zh-CN',
         'zh-hans': 'zh-CN',
         'en': 'en-US',
         'en-us': 'en-US',
+        'fa': 'fa-IR',
+        'fa-ir': 'fa-IR',
     }
 
     return lang_mapping.get(lang, lang)
 
 
 class I18nMiddleware(BaseHTTPMiddleware):
-    """国际化中间件"""
+    """Internationalization middleware"""
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """
-        处理请求并设置国际化语言
+        Process request and set locale
 
-        :param request: FastAPI 请求对象
-        :param call_next: 下一个中间件或路由处理函数
+        :param request: FastAPI request object
+        :param call_next: Next middleware or route handler
         :return:
         """
         language = get_current_language(request)
 
-        # 设置国际化语言
+        # Set locale
         if language and i18n.current_language != language:
             i18n.current_language = language
 

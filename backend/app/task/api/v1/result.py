@@ -14,10 +14,10 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/{pk}', summary='获取任务结果详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='Get task result details', dependencies=[DependsJwtAuth])
 async def get_task_result(
     db: CurrentSession,
-    pk: Annotated[int, Path(description='任务结果 ID')],
+    pk: Annotated[int, Path(description='Task result ID')],
 ) -> ResponseSchemaModel[GetTaskResultDetail]:
     result = await task_result_service.get(db=db, pk=pk)
     return response_base.success(data=result)
@@ -25,7 +25,7 @@ async def get_task_result(
 
 @router.get(
     '',
-    summary='分页获取所有任务结果',
+    summary='Get all task results with pagination',
     dependencies=[
         DependsJwtAuth,
         DependsPagination,
@@ -33,8 +33,8 @@ async def get_task_result(
 )
 async def get_task_results_paginated(
     db: CurrentSession,
-    name: Annotated[str | None, Query(description='任务名称')] = None,
-    task_id: Annotated[str | None, Query(description='任务 ID')] = None,
+    name: Annotated[str | None, Query(description='Task name')] = None,
+    task_id: Annotated[str | None, Query(description='Task ID')] = None,
 ) -> ResponseSchemaModel[PageData[GetTaskResultDetail]]:
     page_data = await task_result_service.get_list(db=db, name=name, task_id=task_id)
     return response_base.success(data=page_data)
@@ -42,7 +42,7 @@ async def get_task_results_paginated(
 
 @router.delete(
     '',
-    summary='批量删除任务结果',
+    summary='Delete task results in bulk',
     dependencies=[
         Depends(RequestPermission('sys:task:del')),
         DependsRBAC,

@@ -21,16 +21,16 @@ from backend.utils.dynamic_import import get_model_objects
 
 def check_plugin_installed(plugin_name: str) -> bool:
     """
-    检查插件是否已安装
+    Check whether plugin is installed
 
-    :param plugin_name: 插件名称
+    :param plugin_name: Plugin name
     :return:
     """
     return (PLUGIN_DIR / plugin_name / '__init__.py').exists()
 
 
 def get_required_plugins() -> tuple[str, ...]:
-    """获取必需插件列表"""
+    """Get required plugin list"""
     required_plugins = list(settings.PLUGIN_REQUIRED)
     if not settings.RBAC_ROLE_MENU_MODE and 'casbin_rbac' not in required_plugins:
         required_plugins.append('casbin_rbac')
@@ -38,25 +38,25 @@ def get_required_plugins() -> tuple[str, ...]:
 
 
 def check_required_plugins() -> None:
-    """检查必需插件"""
+    """Check required plugins"""
     required_plugins = get_required_plugins()
     missing_plugins = [name for name in required_plugins if not check_plugin_installed(name)]
     if missing_plugins:
-        raise PluginInjectError(f'当前系统缺少以下插件: {", ".join(missing_plugins)}，请先安装对应插件')
+        raise PluginInjectError(f'Required plugins are missing: {", ".join(missing_plugins)}; install them first')
 
 
 @lru_cache(maxsize=128)
 def get_plugins() -> tuple[str, ...]:
-    """获取插件列表"""
+    """Get plugin list"""
     plugin_packages = []
 
-    # 遍历插件目录
+    # Iterate over plugin directories
     for item in os.listdir(PLUGIN_DIR):
         item_path = PLUGIN_DIR / item
         if not os.path.isdir(item_path) and item == '__pycache__':
             continue
 
-        # 检查是否为目录且包含 __init__.py 文件
+        # Check that the entry is a directory containing __init__.py
         if os.path.isdir(item_path) and '__init__.py' in os.listdir(item_path):
             plugin_packages.append(item)
 
@@ -65,9 +65,9 @@ def get_plugins() -> tuple[str, ...]:
 
 def get_enabled_plugins(plugins: tuple[str, ...] | None = None) -> set[str]:
     """
-    获取已启用的插件列表
+    Get enabled plugin list
 
-    :param plugins: 插件名称列表
+    :param plugins: Plugin name list
     :return:
     """
     plugin_names = plugins or get_plugins()
@@ -89,31 +89,31 @@ def get_enabled_plugins(plugins: tuple[str, ...] | None = None) -> set[str]:
 
 def load_plugin_config(plugin: str) -> dict[str, Any]:
     """
-    加载插件配置
+    Load plugin configuration
 
-    :param plugin: 插件名称
+    :param plugin: Plugin name
     :return:
     """
     toml_path = PLUGIN_DIR / plugin / 'plugin.toml'
     if not os.path.exists(toml_path):
-        raise PluginInjectError(f'插件 {plugin} 缺少 plugin.toml 配置文件，请检查插件是否合法')
+        raise PluginInjectError(f'Plugin {plugin} is missing plugin.toml; check that the plugin is valid')
 
     with open(toml_path, encoding='utf-8') as f:
         return rtoml.load(f)
 
 
 def parse_plugin_config() -> tuple[list[PluginEntry], list[PluginEntry]]:
-    """解析插件配置"""
+    """Parse plugin configuration"""
     plugins = get_plugins()
     extend_plugins: list[PluginEntry] = []
     app_plugins: list[PluginEntry] = []
 
-    # 使用独立连接
+    # Use a dedicated connection
     current_redis_client = RedisCli()
     run_await(current_redis_client.init)()
 
     try:
-        # 清理未知插件信息
+        # Remove information for unknown plugins
         exclude_keys = [f'{settings.PLUGIN_REDIS_PREFIX}:{key}' for key in plugins]
         run_await(current_redis_client.delete_by_prefix)(
             settings.PLUGIN_REDIS_PREFIX,
@@ -124,7 +124,7 @@ def parse_plugin_config() -> tuple[list[PluginEntry], list[PluginEntry]]:
             plugin_config = load_plugin_config(plugin)
             plugin_type = validate_plugin_config(plugin, plugin_config)
 
-            # 补充插件信息
+            # Populate plugin information
             plugin_config['plugin']['name'] = plugin
             plugin_cache_key = f'{settings.PLUGIN_REDIS_PREFIX}:{plugin}'
             plugin_cache_info = run_await(current_redis_client.get)(plugin_cache_key)
@@ -148,10 +148,10 @@ def parse_plugin_config() -> tuple[list[PluginEntry], list[PluginEntry]]:
                     )
                 )
 
-            # 缓存最新插件信息
+            # Cache latest plugin information
             run_await(current_redis_client.set)(plugin_cache_key, json.dumps(plugin_config, ensure_ascii=False))
 
-        # 重置插件变更状态
+        # Reset plugin change status
         run_await(current_redis_client.delete)(f'{settings.PLUGIN_REDIS_PREFIX}:changed')
     finally:
         run_await(current_redis_client.aclose)()
@@ -161,9 +161,9 @@ def parse_plugin_config() -> tuple[list[PluginEntry], list[PluginEntry]]:
 
 def resolve_plugin_order(plugins: list[PluginEntry]) -> list[PluginEntry]:
     """
-    根据 depends_on 对插件排序
+    Sort plugins by depends_on
 
-    :param plugins: 插件配置列表
+    :param plugins: Plugin configuration list
     :return:
     """
     plugin_map = {plugin.name: plugin for plugin in plugins}
@@ -177,14 +177,16 @@ def resolve_plugin_order(plugins: list[PluginEntry]) -> list[PluginEntry]:
         if plugin.name in visiting:
             cycle_start = visiting.index(plugin.name)
             cycle_path = [*visiting[cycle_start:], plugin.name]
-            raise PluginConfigError(f'插件存在循环依赖: {" -> ".join(cycle_path)}')
+            raise PluginConfigError(f'Circular plugin dependency: {" -> ".join(cycle_path)}')
 
         if plugin.depends_on is not None:
             visiting.append(plugin.name)
             for dep_name in plugin.depends_on:
                 dep_plugin = plugin_map.get(dep_name)
                 if dep_plugin is None:
-                    raise PluginConfigError(f'插件 {plugin.name} 依赖插件 {dep_name}，但插件 {dep_name} 不存在')
+                    raise PluginConfigError(
+                        f'Plugin {plugin.name} depends on plugin {dep_name}, but plugin {dep_name} does not exist'
+                    )
                 visit(dep_plugin)
             visiting.pop()
 
@@ -198,7 +200,7 @@ def resolve_plugin_order(plugins: list[PluginEntry]) -> list[PluginEntry]:
 
 
 def get_ordered_enabled_plugins() -> list[PluginEntry]:
-    """获取按依赖排序后的已启用插件"""
+    """Get enabled plugins in dependency order"""
     enabled_plugins = get_enabled_plugins()
     extend_plugins, app_plugins = parse_plugin_config()
     plugins: list[PluginEntry] = [plugin for plugin in extend_plugins + app_plugins if plugin.name in enabled_plugins]
@@ -206,12 +208,12 @@ def get_ordered_enabled_plugins() -> list[PluginEntry]:
     try:
         return resolve_plugin_order(plugins)
     except PluginConfigError as e:
-        log.error(f'插件依赖解析失败: {e}')
+        log.error(f'Failed to resolve plugin dependencies: {e}')
         raise
 
 
 def get_plugin_models() -> list[object]:
-    """获取插件所有模型类"""
+    """Get all model classes from plugins"""
     objs = []
 
     for plugin in get_plugins():

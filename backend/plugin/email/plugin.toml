@@ -1,7 +1,7 @@
 [plugin]
-summary = "电子邮件"
+summary = "Email"
 version = "0.0.3"
-description = "提供邮件发送功能，支持验证码、通知等场景"
+description = "Send verification codes, notifications, and other emails"
 author = "wu-clan"
 tags = ["other"]
 database = ["mysql", "postgresql"]
@@ -10,7 +10,7 @@ database = ["mysql", "postgresql"]
 router = ["v1"]
 
 [settings]
-EMAIL_CAPTCHA_EXPIRE_SECONDS = 180  # 3 分钟
+EMAIL_CAPTCHA_EXPIRE_SECONDS = 180  # 3 minutes
 EMAIL_CAPTCHA_REDIS_PREFIX = "fba:email:captcha"
 EMAIL_HOST = "smtp.qq.com"
 EMAIL_PORT = 465

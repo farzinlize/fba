@@ -9,9 +9,9 @@ from anyio import open_file
 
 async def format_python_code(code: str) -> str:
     """
-    使用 ruff 格式化 Python 代码
+    Format Python code using Ruff
 
-    :param code: 原始代码
+    :param code: Source code
     :return:
     """
     temp_dir = anyio.Path(tempfile.gettempdir())

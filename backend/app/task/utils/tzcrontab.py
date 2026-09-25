@@ -6,7 +6,7 @@ from backend.utils.timezone import timezone
 
 
 class TzAwareCrontab(schedules.crontab):
-    """时区感知 Crontab"""
+    """Timezone-aware Crontab"""
 
     def __init__(self, minute='*', hour='*', day_of_week='*', day_of_month='*', month_of_year='*', app=None) -> None:  # ruff:ignore[missing-type-function-argument]
         super().__init__(
@@ -22,15 +22,15 @@ class TzAwareCrontab(schedules.crontab):
 
 def crontab_verify(crontab: str) -> None:
     """
-    验证标准 crontab 表达式
+    Validate a standard crontab expression
 
-    :param crontab: 标准 crontab 表达式
+    :param crontab: Standard crontab expression
     :return:
     """
     crontab_split = crontab.split(' ')
     if len(crontab_split) != 5:
-        raise errors.RequestError(msg='Crontab 表达式非法')
+        raise errors.RequestError(msg='Invalid Crontab expression')
     try:
         TzAwareCrontab.from_string(crontab)
     except (ParseException, ValueError):
-        raise errors.RequestError(msg='Crontab 表达式非法')
+        raise errors.RequestError(msg='Invalid Crontab expression')

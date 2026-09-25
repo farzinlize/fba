@@ -7,7 +7,7 @@ from backend.core.conf import settings
 
 _PROMETHEUS_SQLALCHEMY_POOL_CONNECTIONS_GAUGE = Gauge(
     name='fba_sqlalchemy_pool_connections',
-    documentation='SQLAlchemy 连接池状态',
+    documentation='SQLAlchemy connection pool status',
     labelnames=['app_name', 'source', 'state'],
 )
 
@@ -17,7 +17,7 @@ def observe_sqlalchemy_pool_connections(
     pool: QueuePool,
     source: str = 'default',
 ) -> None:
-    """监听 SQLAlchemy 连接池状态"""
+    """Monitor SQLAlchemy connection pool status"""
     total_size = pool.size()
     checked_out_size = pool.checkedout()
     overflow_size = pool.overflow()

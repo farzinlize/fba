@@ -10,9 +10,9 @@ from backend.utils.timezone import timezone
 
 def build_filename(file: UploadFile) -> str:
     """
-    构建文件名
+    Build filename
 
-    :param file: FastAPI 上传文件对象
+    :param file: FastAPI uploaded file object
     :return:
     """
     timestamp = int(timezone.now().timestamp())
@@ -24,31 +24,31 @@ def build_filename(file: UploadFile) -> str:
 
 def upload_file_verify(file: UploadFile) -> None:
     """
-    文件验证
+    Validate file
 
-    :param file: FastAPI 上传文件对象
+    :param file: FastAPI uploaded file object
     :return:
     """
     filename = file.filename
     file_ext = filename.split('.')[-1].lower()
     if not file_ext:
-        raise errors.RequestError(msg='未知的文件类型')
+        raise errors.RequestError(msg='Unknown file type')
 
     if file_ext in settings.UPLOAD_IMAGE_EXT_INCLUDE:
         if file.size > settings.UPLOAD_IMAGE_SIZE_MAX:
-            raise errors.RequestError(msg='图片超出最大限制，请重新选择')
+            raise errors.RequestError(msg='Image exceeds the size limit; select another image')
     elif file_ext in settings.UPLOAD_VIDEO_EXT_INCLUDE:
         if file.size > settings.UPLOAD_VIDEO_SIZE_MAX:
-            raise errors.RequestError(msg='视频超出最大限制，请重新选择')
+            raise errors.RequestError(msg='Video exceeds the size limit; select another video')
     else:
-        raise errors.RequestError(msg=f'此文件格式 {file_ext} 暂不支持')
+        raise errors.RequestError(msg=f'File format {file_ext} is not supported')
 
 
 async def upload_file(file: UploadFile) -> str:
     """
-    上传文件
+    Upload file
 
-    :param file: FastAPI 上传文件对象
+    :param file: FastAPI uploaded file object
     :return:
     """
     filename = build_filename(file)
@@ -60,7 +60,7 @@ async def upload_file(file: UploadFile) -> str:
                     break
                 await fb.write(content)
     except Exception as e:
-        log.error(f'上传文件 {filename} 失败：{e!s}')
-        raise errors.RequestError(msg='上传文件失败')
+        log.error(f'Failed to upload file {filename}: {e!s}')
+        raise errors.RequestError(msg='File upload failed')
     await file.close()
     return filename

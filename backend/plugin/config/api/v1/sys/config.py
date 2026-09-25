@@ -19,18 +19,18 @@ from backend.plugin.config.service.config_service import config_service
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有参数配置', dependencies=[DependsJwtAuth])
+@router.get('/all', summary='Get all configuration parameters', dependencies=[DependsJwtAuth])
 async def get_all_configs(
     db: CurrentSession,
-    type: Annotated[str | None, Query(description='参数配置类型')] = None,
+    type: Annotated[str | None, Query(description='Configuration parameter type')] = None,
 ) -> ResponseSchemaModel[list[GetConfigDetail]]:
     configs = await config_service.get_all(db=db, type=type)
     return response_base.success(data=configs)
 
 
-@router.get('/{pk}', summary='获取参数配置详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='Get configuration parameter details', dependencies=[DependsJwtAuth])
 async def get_config(
-    db: CurrentSession, pk: Annotated[int, Path(description='参数配置 ID')]
+    db: CurrentSession, pk: Annotated[int, Path(description='Configuration parameter ID')]
 ) -> ResponseSchemaModel[GetConfigDetail]:
     config = await config_service.get(db=db, pk=pk)
     return response_base.success(data=config)
@@ -38,7 +38,7 @@ async def get_config(
 
 @router.get(
     '',
-    summary='分页获取所有参数配置',
+    summary='Get all configuration parameters with pagination',
     dependencies=[
         DependsJwtAuth,
         DependsPagination,
@@ -46,8 +46,8 @@ async def get_config(
 )
 async def get_configs_paginated(
     db: CurrentSession,
-    name: Annotated[str | None, Query(description='参数配置名称')] = None,
-    type: Annotated[str | None, Query(description='参数配置类型')] = None,
+    name: Annotated[str | None, Query(description='Configuration parameter name')] = None,
+    type: Annotated[str | None, Query(description='Configuration parameter type')] = None,
 ) -> ResponseSchemaModel[PageData[GetConfigDetail]]:
     page_data = await config_service.get_list(db=db, name=name, type=type)
     return response_base.success(data=page_data)
@@ -55,7 +55,7 @@ async def get_configs_paginated(
 
 @router.post(
     '',
-    summary='创建参数配置',
+    summary='Create configuration parameter',
     dependencies=[
         Depends(RequestPermission('sys:config:add')),
         DependsRBAC,
@@ -66,7 +66,11 @@ async def create_config(db: CurrentSessionTransaction, obj: CreateConfigParam) -
     return response_base.success()
 
 
-@router.put('', summary='批量更新参数配置', dependencies=[Depends(RequestPermission('sys.config.edits')), DependsRBAC])
+@router.put(
+    '',
+    summary='Update configuration parameters in bulk',
+    dependencies=[Depends(RequestPermission('sys.config.edits')), DependsRBAC],
+)
 async def bulk_update_config(db: CurrentSessionTransaction, objs: list[UpdateConfigsParam]) -> ResponseModel:
     count = await config_service.bulk_update(db=db, objs=objs)
     if count > 0:
@@ -76,14 +80,16 @@ async def bulk_update_config(db: CurrentSessionTransaction, objs: list[UpdateCon
 
 @router.put(
     '/{pk}',
-    summary='更新参数配置',
+    summary='Update configuration parameter',
     dependencies=[
         Depends(RequestPermission('sys:config:edit')),
         DependsRBAC,
     ],
 )
 async def update_config(
-    db: CurrentSessionTransaction, pk: Annotated[int, Path(description='参数配置 ID')], obj: UpdateConfigParam
+    db: CurrentSessionTransaction,
+    pk: Annotated[int, Path(description='Configuration parameter ID')],
+    obj: UpdateConfigParam,
 ) -> ResponseModel:
     count = await config_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
@@ -93,14 +99,14 @@ async def update_config(
 
 @router.delete(
     '',
-    summary='批量删除参数配置',
+    summary='Delete configuration parameters in bulk',
     dependencies=[
         Depends(RequestPermission('sys:config:del')),
         DependsRBAC,
     ],
 )
 async def delete_configs(
-    db: CurrentSessionTransaction, pks: Annotated[list[int], Body(description='参数配置 ID 列表')]
+    db: CurrentSessionTransaction, pks: Annotated[list[int], Body(description='Configuration parameter ID list')]
 ) -> ResponseModel:
     count = await config_service.delete(db=db, pks=pks)
     if count > 0:

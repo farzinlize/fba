@@ -13,13 +13,13 @@ from backend.common.security.jwt import DependsSuperUser
 router = APIRouter()
 
 
-@router.get('', summary='获取所有插件', dependencies=[DependsSuperUser])
+@router.get('', summary='Get all plugins', dependencies=[DependsSuperUser])
 async def get_all_plugins() -> ResponseSchemaModel[list[dict[str, Any]]]:
     plugins = await plugin_service.get_all()
     return response_base.success(data=plugins)
 
 
-@router.get('/changed', summary='是否存在插件变更', dependencies=[DependsSuperUser])
+@router.get('/changed', summary='Check for plugin changes', dependencies=[DependsSuperUser])
 async def plugin_changed() -> ResponseSchemaModel[bool]:
     plugins = await plugin_service.changed()
     return response_base.success(data=bool(plugins))
@@ -27,45 +27,54 @@ async def plugin_changed() -> ResponseSchemaModel[bool]:
 
 @router.post(
     '',
-    summary='安装插件',
-    description='使用插件 zip 压缩包或 git 仓库地址进行安装（仅开发环境）',
+    summary='Install plugin',
+    description='Install from a plugin ZIP archive or Git repository URL (development only)',
     dependencies=[DependsSuperUser],
 )
 async def install_plugin(
-    type: Annotated[PluginType, Query(description='插件类型')],
+    type: Annotated[PluginType, Query(description='Plugin type')],
     file: Annotated[UploadFile | None, File()] = None,
-    repo_url: Annotated[str | None, Query(description='插件 git 仓库地址')] = None,
+    repo_url: Annotated[str | None, Query(description='Plugin Git repository URL')] = None,
 ) -> ResponseModel:
     plugin_name = await plugin_service.install(type=type, file=file, repo_url=repo_url)
     return response_base.success(
         res=CustomResponse(
             code=200,
-            msg=f'插件 {plugin_name} 安装成功，请根据插件说明（README.md）进行相关配置并重启服务',
+            msg=(
+                f'Plugin {plugin_name} installed successfully; configure it according to its '
+                f'README.md and restart the service'
+            ),
         ),
     )
 
 
 @router.delete(
     '/{plugin}',
-    summary='卸载插件',
-    description='此操作会直接删除插件依赖，但不会直接删除插件，而是将插件移动到备份目录（仅开发环境）',
+    summary='Uninstall plugin',
+    description='Remove plugin dependencies and move the plugin to the backup directory (development only)',
     dependencies=[DependsSuperUser],
 )
-async def uninstall_plugin(plugin: Annotated[str, Path(description='插件名称')]) -> ResponseModel:
+async def uninstall_plugin(plugin: Annotated[str, Path(description='Plugin name')]) -> ResponseModel:
     await plugin_service.uninstall(plugin=plugin)
     return response_base.success(
-        res=CustomResponse(code=200, msg=f'插件 {plugin} 卸载成功，请根据插件说明（README.md）移除相关配置并重启服务'),
+        res=CustomResponse(
+            code=200,
+            msg=(
+                f'Plugin {plugin} uninstalled successfully; remove related configuration according '
+                f'to its README.md and restart the service'
+            ),
+        ),
     )
 
 
-@router.put('/{plugin}/status', summary='更新插件状态', dependencies=[DependsSuperUser])
-async def update_plugin_status(plugin: Annotated[str, Path(description='插件名称')]) -> ResponseModel:
+@router.put('/{plugin}/status', summary='Update plugin status', dependencies=[DependsSuperUser])
+async def update_plugin_status(plugin: Annotated[str, Path(description='Plugin name')]) -> ResponseModel:
     await plugin_service.update_status(plugin=plugin)
     return response_base.success()
 
 
-@router.get('/{plugin}', summary='下载插件', dependencies=[DependsSuperUser])
-async def download_plugin(plugin: Annotated[str, Path(description='插件名称')]) -> StreamingResponse:
+@router.get('/{plugin}', summary='Download plugin', dependencies=[DependsSuperUser])
+async def download_plugin(plugin: Annotated[str, Path(description='Plugin name')]) -> StreamingResponse:
     bio = await plugin_service.build(plugin=plugin)
     return StreamingResponse(
         bio,

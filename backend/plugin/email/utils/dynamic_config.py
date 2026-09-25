@@ -5,9 +5,9 @@ from backend.utils.dynamic_config import load_config, str_to_bool
 
 async def load_email_config(db: AsyncSession) -> None:
     """
-    获取邮箱配置
+    Get email configuration
 
-    :param db: 数据库会话
+    :param db: Database session
     :return:
     """
     mapping = {

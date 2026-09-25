@@ -7,7 +7,7 @@ from backend.common.model import MappedBase, TimeZone
 from backend.utils.timezone import timezone
 
 """
-重写 celery.backends.database.models 内部所有模型，适配 fba 创建表和 alembic 迁移
+Override all models in celery.backends.database.models to support FBA table creation and Alembic migrations
 """
 
 
@@ -15,7 +15,7 @@ class Task(MappedBase):
     """Task result/status."""
 
     __tablename__ = 'task_result'
-    __table_args__ = {'comment': '任务结果表'}
+    __table_args__ = {'comment': 'Task result table'}
 
     id = sa.Column(sa.Integer, sa.Sequence('task_id_sequence'), primary_key=True, autoincrement=True)
     task_id = sa.Column(sa.String(155), unique=True)
@@ -55,7 +55,7 @@ class TaskExtended(Task):
     """For the extend result."""
 
     __tablename__ = 'task_result'
-    __table_args__ = {'extend_existing': True, 'comment': '任务结果表'}
+    __table_args__ = {'extend_existing': True, 'comment': 'Task result table'}
 
     name = sa.Column(sa.String(155), nullable=True)
     args = sa.Column(sa.LargeBinary, nullable=True)
@@ -81,7 +81,7 @@ class TaskSet(MappedBase):
     """TaskSet result."""
 
     __tablename__ = 'task_set_result'
-    __table_args__ = {'comment': '任务集结果表'}
+    __table_args__ = {'comment': 'Task group result table'}
 
     id = sa.Column(sa.Integer, sa.Sequence('taskset_id_sequence'), autoincrement=True, primary_key=True)
     taskset_id = sa.Column(sa.String(155), unique=True)

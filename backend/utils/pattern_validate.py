@@ -3,10 +3,10 @@ import re
 
 def search_string(pattern: str, text: str) -> re.Match[str]:
     """
-    全字段正则匹配
+    Match the entire field using a regular expression
 
-    :param pattern: 正则表达式模式
-    :param text: 待匹配的文本
+    :param pattern: Regular expression pattern
+    :param text: Text to match
     :return:
     """
     return re.search(pattern, text)
@@ -14,10 +14,10 @@ def search_string(pattern: str, text: str) -> re.Match[str]:
 
 def match_string(pattern: str, text: str) -> re.Match[str]:
     """
-    从字段开头正则匹配
+    Match from the start of the field using a regular expression
 
-    :param pattern: 正则表达式模式
-    :param text: 待匹配的文本
+    :param pattern: Regular expression pattern
+    :param text: Text to match
     :return:
     """
     return re.match(pattern, text)
@@ -25,9 +25,9 @@ def match_string(pattern: str, text: str) -> re.Match[str]:
 
 def is_phone(number: str) -> re.Match[str]:
     """
-    检查手机号码格式
+    Validate mobile phone number format
 
-    :param number: 待检查的手机号码
+    :param number: Mobile phone number to validate
     :return:
     """
     phone_pattern = r'^1[3-9]\d{9}$'
@@ -36,9 +36,9 @@ def is_phone(number: str) -> re.Match[str]:
 
 def is_git_url(url: str) -> re.Match[str]:
     """
-    检查 git URL 格式（仅允许 HTTP/HTTPS 协议）
+    Validate Git URL format (HTTP/HTTPS only)
 
-    :param url: 待检查的 URL
+    :param url: URL to validate
     :return:
     """
     git_pattern = r'^(?P<scheme>https?)://(?P<host>[^/]*)(?P<path>(?:/[^/]*)*/)(?P<repo>[^/]+?)(?:\.git)?$'
@@ -47,9 +47,9 @@ def is_git_url(url: str) -> re.Match[str]:
 
 def is_has_number(value: str) -> re.Match[str]:
     """
-    检查数字
+    Check for digits
 
-    :param value: 待检查的值
+    :param value: Value to check
     :return:
     """
     number_pattern = r'\d'
@@ -58,9 +58,9 @@ def is_has_number(value: str) -> re.Match[str]:
 
 def is_has_letter(value: str) -> re.Match[str]:
     """
-    检查字母
+    Check for letters
 
-    :param value: 待检查的值
+    :param value: Value to check
     :return:
     """
     letter_pattern = r'[a-zA-Z]'
@@ -69,9 +69,9 @@ def is_has_letter(value: str) -> re.Match[str]:
 
 def is_has_special_char(value: str) -> re.Match[str]:
     """
-    检查特殊字符
+    Check for special characters
 
-    :param value: 待检查的值
+    :param value: Value to check
     :return:
     """
     special_char_pattern = r'[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/\\|`~]'
@@ -80,9 +80,9 @@ def is_has_special_char(value: str) -> re.Match[str]:
 
 def is_english_identifier(value: str) -> re.Match[str]:
     """
-    检查英文标识符
+    Validate English identifier
 
-    :param value: 待检查的值
+    :param value: Value to check
     :return:
     """
     identifier_pattern = r'^[a-zA-Z][a-zA-Z_]*$'

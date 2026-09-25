@@ -8,7 +8,7 @@ networks:
         - subnet: 172.10.10.0/24
 
 volumes:
-  # 如果你是 mysql 用户，应将 fba_postgres 修改为 fba_mysql
+  # For MySQL, replace fba_postgres with fba_mysql
   fba_postgres:
     name: fba_postgres
   fba_redis:
@@ -38,7 +38,7 @@ services:
     restart: always
     environment:
       - TZ=Asia/Shanghai
-    # 如果你是 mysql 用户，应将 fba_postgres 修改为 fba_mysql
+    # For MySQL, replace fba_postgres with fba_mysql
     depends_on:
       - fba_postgres
       - fba_redis
@@ -49,7 +49,7 @@ services:
       - ${DOCKER_FBA_SERVER_LOG:-./logs/fba}:/var/log/fba
     networks:
       - fba_network
-    # 如果你是 mysql 用户，应将 fba_postgres:5432 修改为 fba_mysql:3306
+    # For MySQL, replace fba_postgres:5432 with fba_mysql:3306
     command:
       - bash
       - -c
@@ -73,7 +73,7 @@ services:
     networks:
       - fba_network
 
-#  # 如果你是 mysql 用户，应保留 fba_mysql 容器脚本并删除 fba_postgres 容器脚本
+#  # For MySQL, keep the fba_mysql service definition and remove fba_postgres
 #  fba_mysql:
 #    image: mysql:8.0.41
 #    ports:
@@ -107,9 +107,9 @@ services:
     networks:
       - fba_network
 
-  # 【后端专用】
-  # 如果使用此容器，意味着你只需部署后端 API 服务，不需要前端
-  # 这与下面的 fba_ui 容器冲突，如果你选择使用 fba_ui 容器，你应该注释或删除 fba_nginx 容器脚本
+  # Backend only
+  # Use this container to deploy only the backend API service without a frontend
+  # This conflicts with fba_ui below; comment out or remove fba_nginx if using fba_ui
   fba_nginx:
     image: nginx:latest
     ports:
@@ -125,8 +125,8 @@ services:
     networks:
       - fba_network
 
-#  # 如果服务器内存小于 4GB，CPU 小于四个内核
-#  # 建议通过前端工程单独构建此容器或在本地进行构建
+#  # If the server has less than 4 GB of memory and fewer than four CPU cores,
+#  # build this container separately from the frontend project or build it locally
 #  fba_ui:
 #    build:
 #      context: /root/fastapi_best_architecture_ui
@@ -145,13 +145,13 @@ services:
 #      - daemon off;
 #    volumes:
 #      # nginx https conf
-#      # 通过 docker 进行部署时，需要打开此配置项并确保<挂载到容器内的证书文件路径>配置
-#      # 与 nginx conf 中的 ssl 证书文件路径配置一致，如果你直接将 ssl 证书文件 cp
-#      # 到了 docker 容器内，则无需挂载证书文件，直接将它们注释或删除即可
-#      # local_ssl_pem_path：你在服务器存放 ssl pem 证书文件的路径，自行修改
-#      # local_ssl_key_path: 你在服务器存放 ssl key 证书文件的路径，自行修改
-#      # /etc/ssl/xxx.pem：挂载到容器内 ssl pem 证书文件的路径，自行修改
-#      # /etc/ssl/xxx.key：挂载到容器内 ssl key 证书文件的路径，自行修改
+#      # When deploying with Docker, enable these mounts and ensure the certificate paths inside the container
+#      # match the SSL certificate paths in the Nginx configuration. If you copy the certificates directly
+#      # into the container, the mounts are unnecessary; comment them out or remove them.
+#      # local_ssl_pem_path: Set the path to the SSL PEM certificate on the host
+#      # local_ssl_key_path: Set the path to the SSL private key on the host
+#      # /etc/ssl/xxx.pem: Set the certificate mount path inside the container
+#      # /etc/ssl/xxx.key: Set the private key mount path inside the container
 #      - local_ssl_pem_path:/etc/ssl/xxx.pem
 #      - local_ssl_key_path:/etc/ssl/xxx.key
 #      - fba_static:/www/fba_server/backend/static
@@ -182,7 +182,7 @@ services:
       args:
         - SERVER_TYPE=fba_celery_worker
     image: fba_celery_worker:latest
-    # 如果你需要分布式部署 Worker，则必须移除此 container_name 配置
+    # Remove this container_name setting when deploying distributed workers
     container_name: fba_celery_worker
     restart: always
     environment:

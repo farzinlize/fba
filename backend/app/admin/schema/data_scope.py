@@ -8,50 +8,50 @@ from backend.common.schema import SchemaBase
 
 
 class DataScopeSchemaBase(SchemaBase):
-    """数据范围基础模型"""
+    """Data scope base schema"""
 
-    name: str = Field(description='名称')
-    status: StatusType = Field(description='状态')
+    name: str = Field(description='Name')
+    status: StatusType = Field(description='Status')
 
 
 class CreateDataScopeParam(DataScopeSchemaBase):
-    """创建数据范围参数"""
+    """Data scope creation parameters"""
 
 
 class UpdateDataScopeParam(DataScopeSchemaBase):
-    """更新数据范围参数"""
+    """Data scope update parameters"""
 
 
 class CreateDataScopeRuleParam(SchemaBase):
-    """创建数据范围规则参数"""
+    """Data scope rule creation parameters"""
 
-    data_scope_id: int = Field(description='数据范围 ID')
-    data_rule_id: int = Field(description='数据规则 ID')
+    data_scope_id: int = Field(description='Data scope ID')
+    data_rule_id: int = Field(description='Data rule ID')
 
 
 class UpdateDataScopeRuleParam(SchemaBase):
-    """更新数据范围规则参数"""
+    """Data scope rule update parameters"""
 
-    rules: list[int] = Field(description='数据规则 ID 列表')
+    rules: list[int] = Field(description='Data rule ID list')
 
 
 class DeleteDataScopeParam(SchemaBase):
-    """删除数据范围参数"""
+    """Data scope deletion parameters"""
 
-    pks: list[int] = Field(description='数据范围 ID 列表')
+    pks: list[int] = Field(description='Data scope ID list')
 
 
 class GetDataScopeDetail(DataScopeSchemaBase):
-    """数据范围详情"""
+    """Data scope details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(description='数据范围 ID')
-    created_time: datetime = Field(description='创建时间')
-    updated_time: datetime | None = Field(None, description='更新时间')
+    id: int = Field(description='Data scope ID')
+    created_time: datetime = Field(description='Creation time')
+    updated_time: datetime | None = Field(None, description='Update time')
 
 
 class GetDataScopeWithRelationDetail(GetDataScopeDetail):
-    """数据范围关联详情"""
+    """Data scope relationship details"""
 
-    rules: list[GetDataRuleDetail | None] = Field([], description='数据规则列表')
+    rules: list[GetDataRuleDetail | None] = Field([], description='Data rule list')

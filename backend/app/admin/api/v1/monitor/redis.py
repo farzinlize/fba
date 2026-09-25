@@ -9,7 +9,7 @@ from backend.utils.format import fmt_seconds
 router = APIRouter()
 
 
-@router.get('', summary='Redis 监控', dependencies=[DependsJwtAuth])
+@router.get('', summary='Redis monitoring', dependencies=[DependsJwtAuth])
 async def get_redis_info() -> ResponseSchemaModel[RedisMonitorInfo]:
     info = await redis_client.info()
     db_size = await redis_client.dbsize()

@@ -10,7 +10,7 @@ LifespanFunc: TypeAlias = Callable[[FastAPI], AbstractAsyncContextManager[dict[s
 
 
 class LifespanManager:
-    """FastAPI lifespan 管理器"""
+    """FastAPI lifespan manager"""
 
     def __init__(self) -> None:
         self._lifespans: dict[LifespanStage, list[LifespanFunc]] = {
@@ -29,10 +29,10 @@ class LifespanManager:
         self, func: LifespanFunc | None = None, *, stage: LifespanStage = LifespanStage.core
     ) -> LifespanFunc | Callable[[LifespanFunc], LifespanFunc]:
         """
-        注册 lifespan hook
+        Register lifespan hook
 
-        :param func: lifespan hook（直接装饰时使用）
-        :param stage: 执行阶段，控制粗粒度顺序，默认为 core
+        :param func: Lifespan hook (when used directly as a decorator)
+        :param stage: Execution phase controlling the broad ordering; defaults to core
         :return:
         """
 
@@ -52,7 +52,7 @@ class LifespanManager:
 
     def build(self) -> LifespanFunc:
         """
-        构建组合后的 lifespan hook
+        Build the combined lifespan hook
 
         :return:
         """
@@ -75,5 +75,5 @@ class LifespanManager:
         return combined_lifespan
 
 
-# 创建 lifespan_manager 单例
+# Create the lifespan_manager singleton
 lifespan_manager = LifespanManager()

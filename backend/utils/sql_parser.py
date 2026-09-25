@@ -7,24 +7,24 @@ from sqlparse import split
 
 from backend.common.exception import errors
 
-# 初始化脚本允许的 SQL 语句前缀
+# SQL statement prefixes allowed in initialization scripts
 _INIT_SQL_PREFIXES: Final = frozenset({'select', 'insert', 'set', 'do'})
 
-# 销毁脚本允许的 SQL 语句前缀
+# SQL statement prefixes allowed in teardown scripts
 _DESTROY_SQL_PREFIXES: Final = _INIT_SQL_PREFIXES | {'drop', 'delete', 'alter'}
 
 
 async def parse_sql_script(filepath: str, *, is_destroy: bool = False) -> list[str]:
     """
-    解析 SQL 脚本
+    Parse SQL script
 
-    :param filepath: 脚本文件路径
-    :param is_destroy: 是否为销毁脚本，将允许破坏性操作
+    :param filepath: Script file path
+    :param is_destroy: Whether this is a teardown script allowing destructive operations
     :return:
     """
     path = anyio.Path(filepath)
     if not await path.exists():
-        raise errors.NotFoundError(msg='SQL 脚本文件不存在')
+        raise errors.NotFoundError(msg='SQL script file does not exist')
 
     async with await open_file(filepath, encoding='utf-8') as f:
         contents = await f.read(1024)
@@ -36,7 +36,10 @@ async def parse_sql_script(filepath: str, *, is_destroy: bool = False) -> list[s
     for statement in statements:
         if not any(statement.strip().lower().startswith(prefix) for prefix in allowed_prefixes):
             raise errors.RequestError(
-                msg=f'SQL 脚本 {filepath} 存在非法操作，仅允许：{", ".join(item.upper() for item in sorted(allowed_prefixes))}'  # ruff:ignore[line-too-long]
+                msg=(
+                    f'SQL script {filepath} contains a disallowed operation; only these are allowed: '
+                    f'{", ".join(item.upper() for item in sorted(allowed_prefixes))}'
+                )
             )
 
     return statements

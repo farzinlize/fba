@@ -12,7 +12,7 @@ from backend.app.task.session import SessionManager
 
 class DatabaseBackend(BaseBackend):
     """
-    重写 celery.backends.database DatabaseBackend，此类实现与模型配合不佳，导致 fba 创建表和 alembic 迁移困难
+    Override celery.backends.database.DatabaseBackend to support FBA table creation and Alembic migrations
     """
 
     # ResultSet.iterate should sleep this much between each pool,

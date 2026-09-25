@@ -11,16 +11,16 @@ from backend.database.redis import redis_client
 
 @asynccontextmanager
 async def acquire_distributed_reload_lock() -> AsyncGenerator[None, Any]:
-    """获取分布式热重载锁"""
+    """Acquire distributed hot reload lock"""
     lock = redis_client.lock(
         'fba:reload_lock',
-        timeout=300,  # 锁持有超时：5 分钟
-        blocking_timeout=60,  # 获取锁等待超时：60 秒
+        timeout=300,  # Lock lifetime: 5 minutes
+        blocking_timeout=60,  # Lock acquisition timeout: 60 seconds
     )
     if not await lock.acquire():
-        raise errors.ServerError(msg='获取热重载锁超时，请稍后重试')
+        raise errors.ServerError(msg='Timed out acquiring the hot reload lock; please try again later')
 
-    # 文件锁（通知文件监控器跳过重载）
+    # File lock notifying the file watcher to skip reload
     lock_path = anyio.Path(RELOAD_LOCK_FILE)
     await lock_path.touch()
 

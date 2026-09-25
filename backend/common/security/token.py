@@ -21,24 +21,24 @@ _REDIS_BATCH_SIZE = 1000
 
 def get_token(request: Request) -> str:
     """
-    获取请求头中的 token
+    Get token from request headers
 
-    :param request: FastAPI 请求对象
+    :param request: FastAPI request object
     :return:
     """
     authorization = request.headers.get('Authorization')
     scheme, token = get_authorization_scheme_param(authorization)
     if not authorization or scheme.lower() != 'bearer':
-        raise errors.TokenError(msg='Token 无效')
+        raise errors.TokenError(msg='Invalid token')
     return token
 
 
 async def _srem_members(key: str, members: list[str] | set[str]) -> None:
     """
-    分批从集合中移除成员
+    Remove set members in batches
 
-    :param key: 集合 key
-    :param members: 要移除的成员
+    :param key: Set key
+    :param members: Members to remove
     :return:
     """
     ordered = list(members)
@@ -50,9 +50,9 @@ async def _srem_members(key: str, members: list[str] | set[str]) -> None:
 
 async def get_user_sessions(user_id: int) -> set[str]:
     """
-    读取有效正式会话
+    Read valid regular sessions
 
-    :param user_id: 用户 ID
+    :param user_id: User ID
     :return:
     """
     index_key = f'{settings.TOKEN_SESSION_REDIS_PREFIX}:{user_id}'
@@ -118,13 +118,14 @@ async def create_access_token(
     **kwargs: Any,
 ) -> AccessToken:
     """
-    生成加密 token
+    Generate signed token
 
-    :param user_id: 用户 ID
-    :param multi_login: 是否允许多端登录
-    :param session_uuid: 复用已有会话 UUID，刷新令牌时保持在线状态连续
-    :param swagger: 是否为 swagger 调试 token，不写入会话索引且不踢其他端
-    :param kwargs: token 额外信息
+    :param user_id: User ID
+    :param multi_login: Whether concurrent logins are allowed
+    :param session_uuid: Reuse the existing session UUID to preserve online status when refreshing tokens
+    :param swagger: Whether this is a Swagger debugging token; omit it from the session index
+        and do not log out other clients
+    :param kwargs: Additional token information
     :return:
     """
     expire = timezone.now() + timedelta(seconds=settings.TOKEN_EXPIRE_SECONDS)
@@ -177,11 +178,11 @@ async def create_access_token(
 
 async def create_refresh_token(session_uuid: str, user_id: int, *, multi_login: bool) -> RefreshToken:
     """
-    生成加密刷新 token，仅用于创建新的 token
+    Generate signed refresh token, used only to create new tokens
 
-    :param session_uuid: 会话 UUID
-    :param user_id: 用户 ID
-    :param multi_login: 是否允许多端登录
+    :param session_uuid: Session UUID
+    :param user_id: User ID
+    :param multi_login: Whether concurrent logins are allowed
     :return:
     """
     expire = timezone.now() + timedelta(seconds=settings.TOKEN_REFRESH_EXPIRE_SECONDS)
@@ -217,18 +218,18 @@ async def create_new_token(
     **kwargs: Any,
 ) -> NewToken:
     """
-    生成新的 token
+    Generate new token
 
-    :param refresh_token: 刷新 token
-    :param session_uuid: 会话 UUID
-    :param user_id: 用户 ID
-    :param multi_login: 是否允许多端登录
-    :param kwargs: token 附加信息
+    :param refresh_token: Refresh token
+    :param session_uuid: Session UUID
+    :param user_id: User ID
+    :param multi_login: Whether concurrent logins are allowed
+    :param kwargs: Additional token information
     :return:
     """
     redis_refresh_token = await redis_client.get(f'{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}')
     if not redis_refresh_token or redis_refresh_token != refresh_token:
-        raise errors.TokenError(msg='Refresh Token 已过期，请重新登录')
+        raise errors.TokenError(msg='Refresh token has expired; please log in again')
 
     new_access_token = await create_access_token(
         user_id,
@@ -249,10 +250,10 @@ async def create_new_token(
 
 async def _revoke_sessions(user_id: int, session_uuids: set[str]) -> None:
     """
-    批量删除会话相关 key，并异步断开 socket
+    Delete session-related keys in bulk and disconnect sockets asynchronously
 
-    :param user_id: 用户 ID
-    :param session_uuids: 要撤销的会话 UUID
+    :param user_id: User ID
+    :param session_uuids: Session UUIDs to revoke
     :return:
     """
     if not session_uuids:
@@ -298,10 +299,10 @@ async def _revoke_sessions(user_id: int, session_uuids: set[str]) -> None:
 
 async def revoke_token(user_id: int, session_uuid: str) -> None:
     """
-    撤销 token
+    Revoke token
 
-    :param user_id: 用户 ID
-    :param session_uuid: 会话 ID
+    :param user_id: User ID
+    :param session_uuid: Session ID
     :return:
     """
     await _revoke_sessions(user_id, {session_uuid})
@@ -314,11 +315,11 @@ async def revoke_user_tokens(
     include_swagger: bool = True,
 ) -> None:
     """
-    撤销用户全部会话，可保留当前会话
+    Revoke all user sessions, optionally preserving the current session
 
-    :param user_id: 用户 ID
-    :param exclude_session_uuid: 需要保留的会话 UUID
-    :param include_swagger: 是否同时撤销 swagger 调试 token
+    :param user_id: User ID
+    :param exclude_session_uuid: Session UUID to preserve
+    :param include_swagger: Whether to also revoke Swagger debugging tokens
     :return:
     """
     session_uuids = await get_user_sessions(user_id)

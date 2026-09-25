@@ -11,29 +11,29 @@ from backend.plugin.code_generator.schema.business import CreateCodeGenBusinessP
 
 
 class CodeGenBusinessService:
-    """代码生成业务服务类"""
+    """Code generation business service"""
 
     @staticmethod
     async def get(*, db: AsyncSession, pk: int) -> CodeGenBusiness:
         """
-        获取指定 ID 的业务
+        Get business definition by ID
 
-        :param db: 数据库会话
-        :param pk: 业务 ID
+        :param db: Database session
+        :param pk: Business definition ID
         :return:
         """
 
         business = await code_gen_business_dao.get(db, pk)
         if not business:
-            raise errors.NotFoundError(msg='代码生成业务不存在')
+            raise errors.NotFoundError(msg='Code generation business definition does not exist')
         return business
 
     @staticmethod
     async def get_all(*, db: AsyncSession) -> Sequence[CodeGenBusiness]:
         """
-        获取所有业务
+        Get all business definitions
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
 
@@ -42,10 +42,10 @@ class CodeGenBusinessService:
     @staticmethod
     async def get_list(*, db: AsyncSession, table_name: str) -> dict[str, Any]:
         """
-        获取代码生成业务列表
+        Get code generation business list
 
-        :param db: 数据库会话
-        :param table_name: 业务表名
+        :param db: Database session
+        :param table_name: Business table name
         :return:
         """
         business_select = await code_gen_business_dao.get_select(table_name=table_name)
@@ -54,49 +54,49 @@ class CodeGenBusinessService:
     @staticmethod
     async def create(*, db: AsyncSession, obj: CreateCodeGenBusinessParam) -> None:
         """
-        创建业务
+        Create business definition
 
-        :param db: 数据库会话
-        :param obj: 创建业务参数
+        :param db: Database session
+        :param obj: Business definition creation parameters
         :return:
         """
 
         business = await code_gen_business_dao.get_by_name(db, obj.table_name)
         if business:
-            raise errors.ConflictError(msg='代码生成业务已存在')
+            raise errors.ConflictError(msg='Code generation business definition already exists')
         await code_gen_business_dao.create(db, obj)
 
     @staticmethod
     async def update(*, db: AsyncSession, pk: int, obj: UpdateCodeGenBusinessParam) -> int:
         """
-        更新业务
+        Update business definition
 
-        :param db: 数据库会话
-        :param pk: 业务 ID
-        :param obj: 更新业务参数
+        :param db: Database session
+        :param pk: Business definition ID
+        :param obj: Business definition update parameters
         :return:
         """
 
         business = await code_gen_business_dao.get(db, pk)
         if not business:
-            raise errors.NotFoundError(msg='代码生成业务不存在')
+            raise errors.NotFoundError(msg='Code generation business definition does not exist')
         if business.table_name != obj.table_name and await code_gen_business_dao.get_by_name(db, obj.table_name):
-            raise errors.ConflictError(msg='代码生成业务已存在')
+            raise errors.ConflictError(msg='Code generation business definition already exists')
         return await code_gen_business_dao.update(db, pk, obj)
 
     @staticmethod
     async def delete(*, db: AsyncSession, pk: int) -> int:
         """
-        删除业务
+        Delete business definition
 
-        :param db: 数据库会话
-        :param pk: 业务 ID
+        :param db: Database session
+        :param pk: Business definition ID
         :return:
         """
 
         business = await code_gen_business_dao.get(db, pk)
         if not business:
-            raise errors.NotFoundError(msg='代码生成业务不存在')
+            raise errors.NotFoundError(msg='Code generation business definition does not exist')
         return await code_gen_business_dao.delete(db, pk)
 
 

@@ -2,7 +2,7 @@ from backend.common.enums import StrEnum
 
 
 class ConfigType(StrEnum):
-    """配置类型"""
+    """Configuration type"""
 
     ai = 'AI'
     email = 'EMAIL'

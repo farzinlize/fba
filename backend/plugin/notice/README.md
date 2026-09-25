@@ -1,30 +1,30 @@
 # Notice
 
-通知公告插件，用于发布系统内部通知、公告
+Notice plugin for publishing internal system notifications and announcements.
 
-- 支持维护系统通知和公告内容
-- 适合后台公告、站内通知等场景
+- Maintain system notifications and announcements.
+- Supports admin announcements and internal notifications.
 
-## 插件类型
+## Plugin type
 
-- 扩展级插件
-- 扩展目标：`admin`
+- Extension-level plugin
+- Extends: `admin`
 
-## 配置说明
+## Configuration
 
-当前插件无需额外配置
+This plugin requires no additional configuration.
 
-## 使用方式
+## Usage
 
-1. 安装并启用插件后，重启后端服务
-2. 通过后台页面或 Swagger 维护通知公告内容
+1. Install and enable the plugin, then restart the backend service.
+2. Manage notice content through the admin interface or Swagger.
 
-## 卸载说明
+## Uninstallation
 
-- 卸载插件后无需额外清理环境变量或插件配置
-- 如前端页面或业务逻辑已依赖通知公告能力，请同步清理对应集成
+- No additional environment variables or plugin settings need removal after uninstalling.
+- Remove frontend or business logic integrations that depend on notices and announcements.
 
-## 联系方式
+## Contact
 
-- 作者：`wu-clan`
-- 反馈方式：提交 Issue 或 PR
+- Author: `wu-clan`
+- Feedback: Submit an issue or pull request.

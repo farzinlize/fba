@@ -8,7 +8,7 @@ from backend.utils.serializers import select_list_serialize
 
 
 def str_to_bool(value: str) -> bool:
-    """将字符串转换为布尔值"""
+    """Convert string to boolean"""
     return value == 'true'
 
 
@@ -19,12 +19,12 @@ async def load_config(
     status_key: str,
 ) -> None:
     """
-    根据配置类型加载配置
+    Load configuration by type
 
-    :param db: 数据库会话
-    :param config_type_attr: 配置类型属性名
-    :param mapping: 配置映射 {config_key: converter}
-    :param status_key: 状态键
+    :param db: Database session
+    :param config_type_attr: Configuration type attribute name
+    :param mapping: Configuration mapping {config_key: converter}
+    :param status_key: Status key
     :return:
     """
     if not check_plugin_installed('config'):
@@ -34,7 +34,7 @@ async def load_config(
         from backend.plugin.config.enums import ConfigType
         from backend.plugin.config.service.config_service import config_service
     except ImportError as e:
-        raise ImportError('参数配置插件用法导入失败，请联系系统管理员') from e
+        raise ImportError('Failed to import configuration plugin utilities; contact the system administrator') from e
 
     config_type = getattr(ConfigType, config_type_attr)
     dynamic_config = await config_service.get_all(db=db, type=config_type)
@@ -53,9 +53,9 @@ async def load_config(
 
 async def load_user_security_config(db: AsyncSession) -> None:
     """
-    获取用户安全配置
+    Get user security configuration
 
-    :param db: 数据库会话
+    :param db: Database session
     :return:
     """
     mapping = {
@@ -73,9 +73,9 @@ async def load_user_security_config(db: AsyncSession) -> None:
 
 async def load_login_config(db: AsyncSession) -> None:
     """
-    获取登录配置
+    Get login configuration
 
-    :param db: 数据库会话
+    :param db: Database session
     :return:
     """
     mapping = {

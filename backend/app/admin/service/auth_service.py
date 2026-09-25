@@ -34,25 +34,25 @@ from backend.utils.timezone import timezone
 
 
 class AuthService:
-    """认证服务类"""
+    """Authentication service"""
 
     @staticmethod
     async def user_verify(*, db: AsyncSession, username: str, password: str) -> tuple[User, int | None]:
         """
-        验证用户名和密码
+        Validate username and password
 
-        :param db: 数据库会话
-        :param username: 用户名
-        :param password: 密码
+        :param db: Database session
+        :param username: Username
+        :param password: Password
         :return:
         """
         user = await user_dao.get_by_username(db, username)
         if not user:
-            raise errors.NotFoundError(msg='用户名或密码有误')
+            raise errors.NotFoundError(msg='Incorrect username or password')
         await password_security_service.check_status(user.id, user.status)
         if user.password is None or not password_verify(password, user.password):
             await password_security_service.handle_login_failure(db, user.id)
-            raise errors.AuthorizationError(msg='用户名或密码有误')
+            raise errors.AuthorizationError(msg='Incorrect username or password')
 
         days_remaining = await password_security_service.check_password_expiry_status(
             db, user.last_password_changed_time
@@ -63,10 +63,10 @@ class AuthService:
 
     async def swagger_login(self, *, db: AsyncSession, obj: HTTPBasicCredentials) -> tuple[str, User]:
         """
-        Swagger 文档登录
+        Swagger documentation login
 
-        :param db: 数据库会话
-        :param obj: 登录凭证
+        :param db: Database session
+        :param obj: Login credentials
         :return:
         """
         user, _ = await self.user_verify(db=db, username=obj.username, password=obj.password)
@@ -87,12 +87,12 @@ class AuthService:
         background_tasks: BackgroundTasks,
     ) -> GetLoginToken:
         """
-        用户登录
+        User login
 
-        :param db: 数据库会话
-        :param response: 响应对象
-        :param obj: 登录参数
-        :param background_tasks: 后台任务
+        :param db: Database session
+        :param response: Response object
+        :param obj: Login parameters
+        :param background_tasks: Background tasks
         :return:
         """
         user = None
@@ -137,11 +137,11 @@ class AuthService:
                 httponly=True,
             )
         except errors.NotFoundError as e:
-            log.error('登陆错误: 用户名不存在')
+            log.error('Login error: username does not exist')
             raise errors.NotFoundError(msg=e.msg)
         except (errors.RequestError, errors.CustomError) as e:
             if not user:
-                log.error(f'登陆错误: {e.msg}')
+                log.error(f'Login error: {e.msg}')
             task = BackgroundTask(
                 login_log_service.create,
                 user_uuid=user.uuid if user else uuid4_str(),
@@ -152,7 +152,7 @@ class AuthService:
             )
             raise errors.RequestError(code=e.code, msg=e.msg, background=task)
         except Exception as e:
-            log.error(f'登陆错误: {e}')
+            log.error(f'Login error: {e}')
             raise
         else:
             background_tasks.add_task(
@@ -175,10 +175,10 @@ class AuthService:
     @staticmethod
     async def get_codes(*, db: AsyncSession, request: Request) -> list[str]:
         """
-        获取用户权限码
+        Get user permission codes
 
-        :param db: 数据库会话
-        :param request: FastAPI 请求对象
+        :param db: Database session
+        :param request: FastAPI request object
         :return:
         """
         codes = set()
@@ -200,25 +200,27 @@ class AuthService:
     @staticmethod
     async def refresh_token(*, db: AsyncSession, request: Request, response: Response) -> GetNewToken:
         """
-        刷新令牌
+        Refresh token
 
-        :param db: 数据库会话
-        :param request: FastAPI 请求对象
-        :param response: FastAPI 响应对象
+        :param db: Database session
+        :param request: FastAPI request object
+        :param response: FastAPI response object
         :return:
         """
         refresh_token = request.cookies.get(settings.COOKIE_REFRESH_TOKEN_KEY)
         if not refresh_token:
-            raise errors.RequestError(msg='Refresh Token 已过期，请重新登录')
+            raise errors.RequestError(msg='Refresh token has expired; please log in again')
 
         token_payload = jwt_decode(refresh_token)
         user = await user_dao.get(db, token_payload.user_id)
         if not user:
-            raise errors.NotFoundError(msg='用户不存在')
+            raise errors.NotFoundError(msg='User does not exist')
         if not user.status:
-            raise errors.AuthorizationError(msg='用户已被锁定, 请联系统管理员')
+            raise errors.AuthorizationError(msg='User is locked; contact the system administrator')
         if not user.is_multi_login and await get_user_sessions(user.id) - {token_payload.session_uuid}:
-            raise errors.ForbiddenError(msg='此用户已在异地登录，请重新登录并及时修改密码')
+            raise errors.ForbiddenError(
+                msg='This user has logged in elsewhere; please log in again and change your password promptly'
+            )
 
         new_token = await create_new_token(
             refresh_token,
@@ -252,10 +254,10 @@ class AuthService:
     @staticmethod
     async def logout(*, request: Request, response: Response) -> None:
         """
-        用户登出
+        User logout
 
-        :param request: FastAPI 请求对象
-        :param response: FastAPI 响应对象
+        :param request: FastAPI request object
+        :param response: FastAPI response object
         :return:
         """
         try:

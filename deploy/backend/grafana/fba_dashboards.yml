@@ -1,14 +1,14 @@
 # ============================================================================
-# Grafana 仪表盘 Provisioning 配置文件
-# 官方文档: https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards
-# 用于自动加载和管理仪表盘，无需手动导入
+# Grafana dashboard provisioning configuration
+# Official documentation: https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards
+# Automatically load and manage dashboards without manual imports
 # ============================================================================
 
-# API 版本号
-# 当前仅支持版本 1
+# API version
+# Currently only version 1 is supported
 apiVersion: 1
 
-# 仪表盘提供者列表
+# Dashboard provider list
 providers:
   - name: fba_server
     orgId: 1

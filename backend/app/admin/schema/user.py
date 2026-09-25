@@ -11,107 +11,107 @@ from backend.common.schema import CustomEmailStr, CustomPhoneNumber, SchemaBase,
 
 
 class AuthSchemaBase(SchemaBase):
-    """用户认证基础模型"""
+    """User authentication base schema"""
 
-    username: str = Field(description='用户名')
-    password: str = Field(description='密码')
+    username: str = Field(description='Username')
+    password: str = Field(description='Password')
 
 
 class AuthLoginParam(AuthSchemaBase):
-    """用户登录参数"""
+    """User login parameters"""
 
-    uuid: str | None = Field(None, description='验证码 UUID')
-    captcha: str | None = Field(None, description='验证码')
+    uuid: str | None = Field(None, description='CAPTCHA UUID')
+    captcha: str | None = Field(None, description='CAPTCHA')
 
 
 class AddUserParam(AuthSchemaBase):
-    """添加用户参数"""
+    """User creation parameters"""
 
-    nickname: str | None = Field(None, description='昵称')
-    email: CustomEmailStr | None = Field(None, description='邮箱')
-    phone: CustomPhoneNumber | None = Field(None, description='手机号码')
-    dept_id: int = Field(description='部门 ID')
-    roles: list[int] = Field(description='角色 ID 列表')
+    nickname: str | None = Field(None, description='Nickname')
+    email: CustomEmailStr | None = Field(None, description='Email')
+    phone: CustomPhoneNumber | None = Field(None, description='Mobile phone number')
+    dept_id: int = Field(description='Department ID')
+    roles: list[int] = Field(description='Role ID list')
 
 
 class AddUserRoleParam(SchemaBase):
-    """添加用户角色"""
+    """Add user roles"""
 
-    user_id: int = Field(description='用户 ID')
-    role_id: int = Field(description='角色 ID')
+    user_id: int = Field(description='User ID')
+    role_id: int = Field(description='Role ID')
 
 
 class AddOAuth2UserParam(AuthSchemaBase):
-    """添加 OAuth2 用户参数"""
+    """OAuth2 user creation parameters"""
 
-    password: str | None = Field(None, description='密码')
-    nickname: str | None = Field(None, description='昵称')
-    email: CustomEmailStr | None = Field(None, description='邮箱')
-    avatar: Annotated[HttpUrl, PlainSerializer(ser_string)] | None = Field(None, description='头像地址')
+    password: str | None = Field(None, description='Password')
+    nickname: str | None = Field(None, description='Nickname')
+    email: CustomEmailStr | None = Field(None, description='Email')
+    avatar: Annotated[HttpUrl, PlainSerializer(ser_string)] | None = Field(None, description='Avatar URL')
 
 
 class ResetPasswordParam(SchemaBase):
-    """重置密码参数"""
+    """Password reset parameters"""
 
-    old_password: str = Field(description='旧密码')
-    new_password: str = Field(description='新密码')
-    confirm_password: str = Field(description='确认密码')
+    old_password: str = Field(description='Old password')
+    new_password: str = Field(description='New password')
+    confirm_password: str = Field(description='Confirm password')
 
 
 class UserInfoSchemaBase(SchemaBase):
-    """用户信息基础模型"""
+    """User information base schema"""
 
-    dept_id: int | None = Field(None, description='部门 ID')
-    username: str = Field(description='用户名')
-    nickname: str = Field(description='昵称')
-    avatar: Annotated[HttpUrl, PlainSerializer(ser_string)] | None = Field(None, description='头像地址')
-    email: CustomEmailStr | None = Field(None, description='邮箱')
-    phone: CustomPhoneNumber | None = Field(None, description='手机号')
+    dept_id: int | None = Field(None, description='Department ID')
+    username: str = Field(description='Username')
+    nickname: str = Field(description='Nickname')
+    avatar: Annotated[HttpUrl, PlainSerializer(ser_string)] | None = Field(None, description='Avatar URL')
+    email: CustomEmailStr | None = Field(None, description='Email')
+    phone: CustomPhoneNumber | None = Field(None, description='Mobile number')
 
 
 class UpdateUserParam(UserInfoSchemaBase):
-    """更新用户参数"""
+    """User update parameters"""
 
-    roles: list[int] = Field(description='角色 ID 列表')
+    roles: list[int] = Field(description='Role ID list')
 
 
 class GetUserInfoDetail(UserInfoSchemaBase):
-    """用户信息详情"""
+    """User information details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    dept_id: int | None = Field(None, description='部门 ID')
-    id: int = Field(description='用户 ID')
-    uuid: str = Field(description='用户 UUID')
-    status: StatusType = Field(description='状态')
-    is_superuser: bool = Field(description='是否超级管理员')
-    is_staff: bool = Field(description='是否管理员')
-    is_multi_login: bool = Field(description='是否允许多端登录')
-    join_time: datetime = Field(description='加入时间')
-    last_login_time: datetime | None = Field(None, description='最后登录时间')
+    dept_id: int | None = Field(None, description='Department ID')
+    id: int = Field(description='User ID')
+    uuid: str = Field(description='User UUID')
+    status: StatusType = Field(description='Status')
+    is_superuser: bool = Field(description='Whether the user is a superuser')
+    is_staff: bool = Field(description='Whether the user is an administrator')
+    is_multi_login: bool = Field(description='Whether concurrent logins are allowed')
+    join_time: datetime = Field(description='Join time')
+    last_login_time: datetime | None = Field(None, description='Last login time')
 
 
 class GetUserInfoWithRelationDetail(GetUserInfoDetail):
-    """用户信息关联详情"""
+    """User relationship details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    dept: GetDeptDetail | None = Field(None, description='部门信息')
-    roles: list[GetRoleWithRelationDetail] = Field(description='角色列表')
+    dept: GetDeptDetail | None = Field(None, description='Department information')
+    roles: list[GetRoleWithRelationDetail] = Field(description='Role list')
 
 
 class GetCurrentUserInfoWithRelationDetail(GetUserInfoWithRelationDetail):
-    """当前用户信息关联详情"""
+    """Current user relationship details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    dept: str | None = Field(None, description='部门名称')
-    roles: list[str] = Field(description='角色名称列表')
+    dept: str | None = Field(None, description='Department name')
+    roles: list[str] = Field(description='Role name list')
 
     @model_validator(mode='before')
     @classmethod
     def handel(cls, data: Any) -> Self:
-        """处理部门和角色数据"""
+        """Process department and role data"""
         dept = data['dept']
         if dept:
             data['dept'] = dept['name']

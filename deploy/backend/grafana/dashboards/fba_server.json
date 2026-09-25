@@ -10,12 +10,12 @@
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "注释与警报",
+        "name": "Annotations and alerts",
         "type": "dashboard"
       }
     ]
   },
-  "description": "FastAPI Best Architecture 应用监控仪表盘 - 实时监控 API 请求、响应时间、错误率和系统日志",
+  "description": "FastAPI Best Architecture application dashboard: real-time API requests, response times, error rates, and system logs",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -30,7 +30,7 @@
         "celery"
       ],
       "targetBlank": true,
-      "title": "Celery 监控",
+      "title": "Celery monitoring",
       "type": "dashboards"
     }
   ],
@@ -44,7 +44,7 @@
         "y": 0
       },
       "id": 100,
-      "title": "📊 服务概览",
+      "title": "📊 Service overview",
       "type": "row"
     },
     {
@@ -52,7 +52,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "所有 API 端点的累计请求数量",
+      "description": "Cumulative request count across all API endpoints",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -118,7 +118,7 @@
         }
       ],
       "timeFrom": "24h",
-      "title": "总请求数",
+      "title": "Total requests",
       "type": "stat"
     },
     {
@@ -126,7 +126,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "当前每秒处理的请求数量，反映系统实时负载情况",
+      "description": "Requests processed per second, reflecting real-time system load",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -192,7 +192,7 @@
           "refId": "A"
         }
       ],
-      "title": "当前 QPS",
+      "title": "Current QPS",
       "type": "stat"
     },
     {
@@ -200,7 +200,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "2xx 成功响应占总响应的百分比，反映服务健康程度。低于 95% 需要关注",
+      "description": "Percentage of responses with a 2xx status, indicating service health. Values below 95% need attention.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -268,7 +268,7 @@
           "refId": "A"
         }
       ],
-      "title": "成功率",
+      "title": "Success rate",
       "type": "stat"
     },
     {
@@ -276,7 +276,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "捕获的累计异常数量，包括所有异常类型",
+      "description": "Cumulative number of captured exceptions across all types",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -342,7 +342,7 @@
         }
       ],
       "timeFrom": "24h",
-      "title": "异常总数",
+      "title": "Total exceptions",
       "type": "stat"
     },
     {
@@ -350,7 +350,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "所有请求的累计平均响应时间（毫秒），反映整体性能",
+      "description": "Cumulative average response time across all requests (milliseconds), indicating overall performance",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -415,7 +415,7 @@
           "refId": "A"
         }
       ],
-      "title": "平均响应时间",
+      "title": "Average response time",
       "type": "stat"
     },
     {
@@ -423,7 +423,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "当前正在处理中的请求数量，反映系统并发情况",
+      "description": "Number of requests currently being processed, indicating concurrency",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -488,7 +488,7 @@
           "refId": "A"
         }
       ],
-      "title": "进行中请求",
+      "title": "Requests in progress",
       "type": "stat"
     },
     {
@@ -500,7 +500,7 @@
         "y": 5
       },
       "id": 101,
-      "title": "📈 请求趋势",
+      "title": "📈 Request trends",
       "type": "row"
     },
     {
@@ -508,7 +508,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "每秒请求数的时间序列图，按 API 路径分组显示，用于观察流量模式和峰值。Mean=时间范围内平均值，Max=最大值",
+      "description": "Requests per second grouped by API path to reveal traffic patterns and peaks. Mean = average over the time range; Max = maximum.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -518,7 +518,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "请求/秒",
+            "axisLabel": "Requests/second",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -598,7 +598,7 @@
           "refId": "A"
         }
       ],
-      "title": "请求速率 (QPS)",
+      "title": "Request rate (QPS)",
       "type": "timeseries"
     },
     {
@@ -606,7 +606,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "当前正在处理的请求数量趋势，用于监控系统并发负载。Mean=平均并发数，Max=峰值并发数",
+      "description": "Trends in requests being processed, showing concurrent load. Mean = average concurrency; Max = peak concurrency.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -616,7 +616,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "请求数",
+            "axisLabel": "Request count",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -696,7 +696,7 @@
           "refId": "A"
         }
       ],
-      "title": "进行中请求趋势",
+      "title": "Requests in progress trends",
       "type": "timeseries"
     },
     {
@@ -708,7 +708,7 @@
         "y": 16
       },
       "id": 103,
-      "title": "✅ 响应状态",
+      "title": "✅ Response status",
       "type": "row"
     },
     {
@@ -716,7 +716,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "各 API 端点的累计 2xx 成功响应占比趋势，绿色区域表示健康（>95%），红色区域表示需要关注（<80%）",
+      "description": "Cumulative 2xx success rate trends by API endpoint. Green indicates healthy (>95%); red needs attention (<80%).",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -726,7 +726,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "成功率",
+            "axisLabel": "Success rate",
             "axisPlacement": "auto",
             "axisSoftMax": 1,
             "axisSoftMin": 0,
@@ -815,7 +815,7 @@
           "refId": "A"
         }
       ],
-      "title": "2xx 成功率趋势",
+      "title": "2xx success rate trends",
       "type": "timeseries"
     },
     {
@@ -823,7 +823,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "各 API 端点的累计 5xx 服务器错误占比趋势，绿色区域表示健康（<1%），红色区域表示严重问题（>10%）",
+      "description": "Cumulative 5xx server error rate trends by API endpoint. Green indicates healthy (<1%); red indicates severe issues (>10%).",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -833,7 +833,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "错误率",
+            "axisLabel": "Error rate",
             "axisPlacement": "auto",
             "axisSoftMax": 0.2,
             "axisSoftMin": 0,
@@ -922,7 +922,7 @@
           "refId": "A"
         }
       ],
-      "title": "5xx 错误率趋势",
+      "title": "5xx error rate trends",
       "type": "timeseries"
     },
     {
@@ -930,7 +930,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "各 API 端点的累计请求数量分布，显示哪些端点最繁忙",
+      "description": "Cumulative request distribution by API endpoint, showing the busiest endpoints",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -990,7 +990,7 @@
           "refId": "A"
         }
       ],
-      "title": "请求分布",
+      "title": "Request distribution",
       "type": "piechart"
     },
     {
@@ -1002,7 +1002,7 @@
         "y": 25
       },
       "id": 102,
-      "title": "⏱️ 响应时间",
+      "title": "⏱️ Response time",
       "type": "row"
     },
     {
@@ -1010,7 +1010,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "各 API 端点的累计平均响应时间，颜色从绿到红表示响应时间从快到慢",
+      "description": "Cumulative average response time by API endpoint; green to red indicates faster to slower responses",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1048,7 +1048,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "方法"
+              "options": "Method"
             },
             "properties": [
               {
@@ -1064,7 +1064,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "接口"
+              "options": "Endpoint"
             },
             "properties": [
               {
@@ -1076,7 +1076,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "平均响应时间"
+              "options": "Average response time"
             },
             "properties": [
               {
@@ -1112,7 +1112,7 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "平均响应时间"
+            "displayName": "Average response time"
           }
         ]
       },
@@ -1131,7 +1131,7 @@
           "refId": "A"
         }
       ],
-      "title": "平均响应时间",
+      "title": "Average response time",
       "transformations": [
         {
           "id": "organize",
@@ -1145,9 +1145,9 @@
             },
             "indexByName": {},
             "renameByName": {
-              "Value": "平均响应时间",
-              "method": "方法",
-              "path": "接口"
+              "Value": "Average response time",
+              "method": "Method",
+              "path": "Endpoint"
             }
           }
         }
@@ -1159,7 +1159,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "99% 的请求在此时间内完成（P99 延迟），用于评估最差情况下的用户体验。Mean=平均P99，Max=最大P99",
+      "description": "99% of requests complete within this time (P99 latency), indicating slow-end user experience. Mean = average P99; Max = maximum P99.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1169,7 +1169,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "延迟 (ms)",
+            "axisLabel": "Latency (ms)",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -1256,7 +1256,7 @@
           "refId": "A"
         }
       ],
-      "title": "P99 响应时间",
+      "title": "P99 response time",
       "type": "timeseries"
     },
     {
@@ -1264,7 +1264,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "95% 的请求在此时间内完成（P95 延迟），用于评估大多数用户的体验。Mean=平均P95，Max=最大P95",
+      "description": "95% of requests complete within this time (P95 latency), indicating the experience of most users. Mean = average P95; Max = maximum P95.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1274,7 +1274,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "延迟 (ms)",
+            "axisLabel": "Latency (ms)",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -1361,7 +1361,7 @@
           "refId": "A"
         }
       ],
-      "title": "P95 响应时间",
+      "title": "P95 response time",
       "type": "timeseries"
     },
     {
@@ -1373,7 +1373,7 @@
         "y": 34
       },
       "id": 104,
-      "title": "🔍 链路追踪",
+      "title": "🔍 Distributed tracing",
       "type": "row"
     },
     {
@@ -1381,7 +1381,7 @@
         "type": "tempo",
         "uid": "tempo"
       },
-      "description": "FastAPI 服务的分布式追踪数据，点击 Trace ID 可跳转到 Explore 查看完整调用链，支持通过顶部「接口筛选」变量过滤",
+      "description": "Distributed traces from the FastAPI service; click a Trace ID to view the full trace in Explore. Filter using the endpoint filter at the top.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1433,7 +1433,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "title": "查看调用链",
+                    "title": "View trace",
                     "url": "/explore?orgId=1&left={\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"${__value.raw}\"}],\"range\":{\"from\":\"now-1h\",\"to\":\"now\"}}"
                   }
                 ]
@@ -1452,7 +1452,7 @@
               },
               {
                 "id": "displayName",
-                "value": "时间"
+                "value": "Time"
               }
             ]
           },
@@ -1464,7 +1464,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "接口"
+                "value": "Endpoint"
               }
             ]
           },
@@ -1480,7 +1480,7 @@
               },
               {
                 "id": "displayName",
-                "value": "耗时"
+                "value": "Duration"
               },
               {
                 "id": "custom.cellOptions",
@@ -1557,7 +1557,7 @@
           "tableType": "traces"
         }
       ],
-      "title": "服务 Traces",
+      "title": "Service traces",
       "type": "table"
     },
     {
@@ -1569,7 +1569,7 @@
         "y": 45
       },
       "id": 105,
-      "title": "📝 应用日志",
+      "title": "📝 Application logs",
       "type": "row"
     },
     {
@@ -1577,7 +1577,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "按级别统计日志产生速率，ERROR/CRITICAL 级别增加需立即关注",
+      "description": "Log generation rates by level; increases in ERROR/CRITICAL logs need immediate attention",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1587,7 +1587,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "日志/秒",
+            "axisLabel": "Logs/second",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -1740,7 +1740,7 @@
           "refId": "A"
         }
       ],
-      "title": "日志级别统计",
+      "title": "Log level statistics",
       "type": "timeseries"
     },
     {
@@ -1748,7 +1748,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "实时应用日志流，支持通过顶部「日志搜索」变量过滤",
+      "description": "Live application log stream; filter using the log search variable at the top",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -1783,7 +1783,7 @@
           "refId": "A"
         }
       ],
-      "title": "实时日志",
+      "title": "Live logs",
       "type": "logs"
     },
     {
@@ -1791,7 +1791,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "仅显示 ERROR 和 CRITICAL 级别日志，支持通过「日志搜索」变量过滤",
+      "description": "Only ERROR and CRITICAL logs; filter using the log search variable",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -1826,7 +1826,7 @@
           "refId": "A"
         }
       ],
-      "title": "错误日志",
+      "title": "Error logs",
       "type": "logs"
     }
   ],
@@ -1844,7 +1844,7 @@
           "text": "",
           "value": ""
         },
-        "description": "输入 Trace ID 同时搜索 Traces 和日志",
+        "description": "Enter a Trace ID to search traces and logs together",
         "label": "Trace ID",
         "name": "trace_id",
         "options": [

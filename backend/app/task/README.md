@@ -1,27 +1,27 @@
-## 任务介绍
+## Task overview
 
-当前任务使用 Celery
-实现，实施方案请查看 [#225](https://github.com/fastapi-practices/fastapi-best-architecture/discussions/225)
+Tasks are implemented using Celery.
+For implementation details, see [#225](https://github.com/fastapi-practices/fastapi-best-architecture/discussions/225).
 
-## 定时任务
+## Scheduled tasks
 
-在 `backend/app/task/tasks/beat.py` 文件内编写相关定时任务
+Define scheduled tasks in `backend/app/task/tasks/beat.py`.
 
-### 简单任务
+### Simple tasks
 
-在 `backend/app/task/tasks/tasks.py` 文件内编写相关任务代码
+Write task code in `backend/app/task/tasks/tasks.py`.
 
-### 层级任务
+### Hierarchical tasks
 
-如果你想对任务进行目录层级划分，使任务结构更加清晰，你可以新建任意目录，但必须注意的是
+You can organize tasks into subdirectories for a clearer structure. Follow these requirements:
 
-1. 在 `backend/app/task/tasks` 目录下新建 python 包目录
-2. 在新建目录下，务必添加 `tasks.py` 文件，并在此文件中编写相关任务代码
+1. Create a Python package under `backend/app/task/tasks`.
+2. Add a `tasks.py` file in that package and define the tasks in it.
 
-## 消息代理
+## Message broker
 
-你可以通过 `CELERY_BROKER` 控制消息代理选择，它支持 redis 和 rabbitmq
+Select the message broker using `CELERY_BROKER`; Redis and RabbitMQ are supported.
 
-对于本地调试，建议使用 redis
+Redis is recommended for local debugging.
 
-对于线上环境，强制使用 rabbitmq
+RabbitMQ is required in production.

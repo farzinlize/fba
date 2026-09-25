@@ -9,66 +9,66 @@ from backend.common.schema import SchemaBase
 
 
 class RoleSchemaBase(SchemaBase):
-    """角色基础模型"""
+    """Role base schema"""
 
-    name: str = Field(description='角色名称')
-    status: StatusType = Field(description='状态')
-    is_filter_scopes: bool = Field(True, description='过滤数据权限')
-    remark: str | None = Field(None, description='备注')
+    name: str = Field(description='Role name')
+    status: StatusType = Field(description='Status')
+    is_filter_scopes: bool = Field(True, description='Apply data permission filtering')
+    remark: str | None = Field(None, description='Notes')
 
 
 class CreateRoleParam(RoleSchemaBase):
-    """创建角色参数"""
+    """Role creation parameters"""
 
 
 class UpdateRoleParam(RoleSchemaBase):
-    """更新角色参数"""
+    """Role update parameters"""
 
 
 class DeleteRoleParam(SchemaBase):
-    """删除角色参数"""
+    """Role deletion parameters"""
 
-    pks: list[int] = Field(description='角色 ID 列表')
+    pks: list[int] = Field(description='Role ID list')
 
 
 class CreateRoleMenuParam(SchemaBase):
-    """创建角色菜单参数"""
+    """Role menu creation parameters"""
 
-    role_id: int = Field(description='角色 ID')
-    menu_id: int = Field(description='菜单 ID')
+    role_id: int = Field(description='Role ID')
+    menu_id: int = Field(description='Menu ID')
 
 
 class UpdateRoleMenuParam(SchemaBase):
-    """更新角色菜单参数"""
+    """Role menu update parameters"""
 
-    menus: list[int] = Field(description='菜单 ID 列表')
+    menus: list[int] = Field(description='Menu ID list')
 
 
 class CreateRoleScopeParam(SchemaBase):
-    """创建角色数据范围参数"""
+    """Role data scope creation parameters"""
 
-    role_id: int = Field(description='角色 ID')
-    data_scope_id: int = Field(description='数据范围 ID')
+    role_id: int = Field(description='Role ID')
+    data_scope_id: int = Field(description='Data scope ID')
 
 
 class UpdateRoleScopeParam(SchemaBase):
-    """更新角色数据范围参数"""
+    """Role data scope update parameters"""
 
-    scopes: list[int] = Field(description='数据范围 ID 列表')
+    scopes: list[int] = Field(description='Data scope ID list')
 
 
 class GetRoleDetail(RoleSchemaBase):
-    """角色详情"""
+    """Role details"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(description='角色 ID')
-    created_time: datetime = Field(description='创建时间')
-    updated_time: datetime | None = Field(None, description='更新时间')
+    id: int = Field(description='Role ID')
+    created_time: datetime = Field(description='Creation time')
+    updated_time: datetime | None = Field(None, description='Update time')
 
 
 class GetRoleWithRelationDetail(GetRoleDetail):
-    """角色关联详情"""
+    """Role relationship details"""
 
-    menus: list[GetMenuDetail | None] = Field([], description='菜单详情列表')
-    scopes: list[GetDataScopeWithRelationDetail | None] = Field([], description='数据范围列表')
+    menus: list[GetMenuDetail | None] = Field([], description='Menu detail list')
+    scopes: list[GetDataScopeWithRelationDetail | None] = Field([], description='Data scope list')

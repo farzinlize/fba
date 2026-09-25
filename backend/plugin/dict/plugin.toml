@@ -1,7 +1,7 @@
 [plugin]
-summary = "数据字典"
+summary = "Data dictionary"
 version = "0.0.8"
-description = "通常用于约束前端工程数据展示"
+description = "Standardize frontend data display"
 author = "wu-clan"
 tags = ["other"]
 database = ["mysql", "postgresql"]
@@ -11,8 +11,8 @@ extend = "admin"
 
 [api.dict_data]
 prefix = "/dict-datas"
-tags = "系统字典数据"
+tags = "System dictionary entries"
 
 [api.dict_type]
 prefix = "/dict-types"
-tags = "系统字典类型"
+tags = "System dictionary types"

@@ -6,7 +6,7 @@ from backend.core.conf import settings
 
 
 class LocalCacheManager:
-    """本地缓存管理器"""
+    """Local cache manager"""
 
     def __init__(self) -> None:
         self.hot_cache: cachebox.TTLCache = cachebox.TTLCache(
@@ -14,18 +14,18 @@ class LocalCacheManager:
         )
 
     def get(self, key: str) -> Any:
-        """获取缓存"""
+        """Get cached value"""
         try:
             return self.hot_cache[key]
         except KeyError:
             return None
 
     def set(self, key: str, value: Any) -> None:
-        """设置缓存"""
+        """Set cached value"""
         self.hot_cache[key] = value
 
     def delete(self, key: str) -> bool:
-        """删除缓存"""
+        """Delete cached value"""
         try:
             del self.hot_cache[key]
         except KeyError:
@@ -33,15 +33,15 @@ class LocalCacheManager:
         return True
 
     def clear(self) -> None:
-        """清空缓存"""
+        """Clear cache"""
         self.hot_cache.clear()
 
     def delete_by_prefix(self, key_prefix: str, exclude_keys: str | list[str] | None = None) -> None:
         """
-        删除指定前缀的缓存
+        Delete cache entries with the specified prefix
 
-        :param key_prefix: 要删除的键前缀
-        :param exclude_keys: 要排除的键或键列表
+        :param key_prefix: Key prefix to delete
+        :param exclude_keys: Key or list of keys to exclude
         :return:
         """
         exclude_set = (

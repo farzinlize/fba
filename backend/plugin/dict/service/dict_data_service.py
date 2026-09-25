@@ -14,21 +14,21 @@ from backend.plugin.dict.schema.dict_data import CreateDictDataParam, DeleteDict
 
 
 class DictDataService:
-    """字典数据服务类"""
+    """Dictionary entry service"""
 
     @staticmethod
     @cached(namespace=settings.CACHE_DICT_REDIS_PREFIX, key='pk')
     async def get(*, db: AsyncSession, pk: int) -> DictData:
         """
-        获取字典数据详情
+        Get dictionary entry details
 
-        :param db: 数据库会话
-        :param pk: 字典数据 ID
+        :param db: Database session
+        :param pk: Dictionary entry ID
         :return:
         """
         dict_data = await dict_data_dao.get(db, pk)
         if not dict_data:
-            raise errors.NotFoundError(msg='字典数据不存在')
+            raise errors.NotFoundError(msg='Dictionary entry does not exist')
         return dict_data
 
     @staticmethod
@@ -38,23 +38,23 @@ class DictDataService:
     )
     async def get_by_type_code(*, db: AsyncSession, code: str) -> Sequence[DictData]:
         """
-        获取字典数据详情
+        Get dictionary entry details
 
-        :param db: 数据库会话
-        :param code: 字典类型编码
+        :param db: Database session
+        :param code: Dictionary type code
         :return:
         """
         dict_datas = await dict_data_dao.get_by_type_code(db, code)
         if not dict_datas:
-            raise errors.NotFoundError(msg='字典数据不存在')
+            raise errors.NotFoundError(msg='Dictionary entry does not exist')
         return dict_datas
 
     @staticmethod
     async def get_all(*, db: AsyncSession) -> Sequence[DictData]:
         """
-        获取所有字典数据
+        Get all dictionary entries
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         dict_datas = await dict_data_dao.get_all(db)
@@ -71,14 +71,14 @@ class DictDataService:
         type_id: int | None,
     ) -> dict[str, Any]:
         """
-        获取字典数据列表
+        Get dictionary entry list
 
-        :param db: 数据库会话
-        :param type_code: 字典类型编码
-        :param label: 字典数据标签
-        :param value: 字典数据键值
-        :param status: 状态
-        :param type_id: 字典类型 ID
+        :param db: Database session
+        :param type_code: Dictionary type code
+        :param label: Dictionary entry label
+        :param value: Dictionary entry value
+        :param status: Status
+        :param type_id: Dictionary type ID
         :return:
         """
         dict_data_select = await dict_data_dao.get_select(
@@ -94,41 +94,41 @@ class DictDataService:
     @cache_invalidate(namespace=settings.CACHE_DICT_REDIS_PREFIX)
     async def create(*, db: AsyncSession, obj: CreateDictDataParam) -> None:
         """
-        创建字典数据
+        Create dictionary entry
 
-        :param db: 数据库会话
-        :param obj: 字典数据创建参数
+        :param db: Database session
+        :param obj: Dictionary entry creation parameters
         :return:
         """
         dict_type = await dict_type_dao.get(db, obj.type_id)
         if not dict_type:
-            raise errors.NotFoundError(msg='字典类型不存在')
+            raise errors.NotFoundError(msg='Dictionary type does not exist')
         dict_data = await dict_data_dao.get_by_label_and_type_code(db, obj.label, dict_type.code)
         if dict_data:
-            raise errors.ConflictError(msg='字典数据已存在')
+            raise errors.ConflictError(msg='Dictionary entry already exists')
         await dict_data_dao.create(db, obj, dict_type.code)
 
     @staticmethod
     @cache_invalidate(namespace=settings.CACHE_DICT_REDIS_PREFIX)
     async def update(*, db: AsyncSession, pk: int, obj: UpdateDictDataParam) -> int:
         """
-        更新字典数据
+        Update dictionary entry
 
-        :param db: 数据库会话
-        :param pk: 字典数据 ID
-        :param obj: 字典数据更新参数
+        :param db: Database session
+        :param pk: Dictionary entry ID
+        :param obj: Dictionary entry update parameters
         :return:
         """
         dict_data = await dict_data_dao.get(db, pk)
         if not dict_data:
-            raise errors.NotFoundError(msg='字典数据不存在')
+            raise errors.NotFoundError(msg='Dictionary entry does not exist')
         dict_type = await dict_type_dao.get(db, obj.type_id)
         if not dict_type:
-            raise errors.NotFoundError(msg='字典类型不存在')
+            raise errors.NotFoundError(msg='Dictionary type does not exist')
         if dict_data.label != obj.label or dict_data.type_code != dict_type.code:
             new_dict_data = await dict_data_dao.get_by_label_and_type_code(db, obj.label, dict_type.code)
             if new_dict_data and new_dict_data.id != pk:
-                raise errors.ConflictError(msg='字典数据已存在')
+                raise errors.ConflictError(msg='Dictionary entry already exists')
         count = await dict_data_dao.update(db, pk, obj, dict_type.code)
         return count
 
@@ -136,10 +136,10 @@ class DictDataService:
     @cache_invalidate(namespace=settings.CACHE_DICT_REDIS_PREFIX)
     async def delete(*, db: AsyncSession, obj: DeleteDictDataParam) -> int:
         """
-        批量删除字典数据
+        Delete dictionary entries in bulk
 
-        :param db: 数据库会话
-        :param obj: 字典数据 ID 列表
+        :param db: Database session
+        :param obj: Dictionary entry ID list
         :return:
         """
         count = await dict_data_dao.delete(db, obj.pks)

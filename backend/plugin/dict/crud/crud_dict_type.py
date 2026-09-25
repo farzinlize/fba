@@ -11,33 +11,33 @@ from backend.utils.timezone import timezone
 
 
 class CRUDDictType(CRUDPlus[DictType]):
-    """字典类型数据库操作类"""
+    """Dictionary type database operations"""
 
     async def get(self, db: AsyncSession, pk: int) -> DictType | None:
         """
-        获取字典类型详情
+        Get dictionary type details
 
-        :param db: 数据库会话
-        :param pk: 字典类型 ID
+        :param db: Database session
+        :param pk: Dictionary type ID
         :return:
         """
         return await self.select_model(db, pk, deleted=0)
 
     async def get_all(self, db: AsyncSession) -> Sequence[DictType]:
         """
-        获取所有字典类型
+        Get all dictionary types
 
-        :param db: 数据库会话
+        :param db: Database session
         :return:
         """
         return await self.select_models(db, deleted=0)
 
     async def get_select(self, name: str | None, code: str | None) -> Select:
         """
-        获取字典类型列表查询表达式
+        Get the query expression for the dictionary type list
 
-        :param name: 字典类型名称
-        :param code: 字典类型编码
+        :param name: Dictionary type name
+        :param code: Dictionary type code
         :return:
         """
         filters = {'deleted': 0}
@@ -51,41 +51,41 @@ class CRUDDictType(CRUDPlus[DictType]):
 
     async def get_by_code(self, db: AsyncSession, code: str) -> DictType | None:
         """
-        通过编码获取字典类型
+        Get dictionary type by code
 
-        :param db: 数据库会话
-        :param code: 字典编码
+        :param db: Database session
+        :param code: Dictionary code
         :return:
         """
         return await self.select_model_by_column(db, code=code, deleted=0)
 
     async def create(self, db: AsyncSession, obj: CreateDictTypeParam) -> None:
         """
-        创建字典类型
+        Create dictionary type
 
-        :param db: 数据库会话
-        :param obj: 创建字典类型参数
+        :param db: Database session
+        :param obj: Dictionary type creation parameters
         :return:
         """
         await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, pk: int, obj: UpdateDictTypeParam) -> int:
         """
-        更新字典类型
+        Update dictionary type
 
-        :param db: 数据库会话
-        :param pk: 字典类型 ID
-        :param obj: 更新字典类型参数
+        :param db: Database session
+        :param pk: Dictionary type ID
+        :param obj: Dictionary type update parameters
         :return:
         """
         return await self.update_model_by_column(db, obj, id=pk, deleted=0)
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
         """
-        批量删除字典类型
+        Delete dictionary types in bulk
 
-        :param db: 数据库会话
-        :param pks: 字典类型 ID 列表
+        :param db: Database session
+        :param pks: Dictionary type ID list
         :return:
         """
         await dict_data_dao.delete_by_type_id(db, pks)

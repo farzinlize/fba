@@ -1,7 +1,7 @@
 [plugin]
-summary = "代码生成"
+summary = "Code generation"
 version = "0.1.1"
-description = "生成通用业务代码"
+description = "Generate common business code"
 author = "wu-clan"
 tags = ["other"]
 database = ["mysql", "postgresql"]

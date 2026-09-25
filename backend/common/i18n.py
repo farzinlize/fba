@@ -14,7 +14,7 @@ from backend.core.path_conf import LOCALE_DIR
 
 
 class I18n:
-    """国际化管理器"""
+    """Internationalization manager"""
 
     def __init__(self) -> None:
         self.locales: dict[str, dict[str, Any]] = {}
@@ -22,7 +22,7 @@ class I18n:
 
     @property
     def current_language(self) -> str:
-        """获取当前请求的语言"""
+        """Get the language of the current request"""
         try:
             return ctx.language
         except (AttributeError, LookupError, ContextDoesNotExistError):
@@ -30,11 +30,11 @@ class I18n:
 
     @current_language.setter
     def current_language(self, language: str) -> None:
-        """设置当前请求的语言"""
+        """Set the language of the current request"""
         ctx.language = language
 
     def load_locales(self) -> None:
-        """加载语言文本"""
+        """Load locale texts"""
         patterns = [
             LOCALE_DIR / '*.json',
             LOCALE_DIR / '*.yaml',
@@ -58,11 +58,11 @@ class I18n:
 
     def t(self, key: str, default: Any | None = None, **kwargs) -> str:
         """
-        翻译函数
+        Translation function
 
-        :param key: 目标文本键，支持点分隔，例如 'response.success'
-        :param default: 目标语言文本不存在时的默认文本
-        :param kwargs: 目标文本中的变量参数
+        :param key: Target text key; supports dot notation, such as 'response.success'
+        :param default: Default text when the target translation is missing
+        :param kwargs: Variable arguments in the target text
         :return:
         """
         keys = key.split('.')
@@ -77,7 +77,7 @@ class I18n:
             if isinstance(translation, dict) and k in list(translation.keys()):
                 translation = translation[k]
             else:
-                # Pydantic 兼容
+                # Pydantic compatibility
                 translation = None if keys[0] == 'pydantic' else key
                 break
 
@@ -87,8 +87,8 @@ class I18n:
         return translation or default
 
 
-# 创建 i18n 单例
+# Create the i18n singleton
 i18n = I18n()
 
-# 创建翻译函数实例
+# Create the translation function alias
 t = i18n.t
