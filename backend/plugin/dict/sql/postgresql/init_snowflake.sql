@@ -18,7 +18,7 @@ values
 (2048602512495345664, 'Login status', 'sys_login_status', 'User login status', now(), null),
 (2048602512549871616, 'Data rule operator', 'sys_data_rule_operator', 'Data permission rule operator', now(), null),
 (2048602512616980480, 'Data rule expression', 'sys_data_rule_expression', 'Data permission rule expression', now(), null),
-(2048602512692477952, 'Frontend configuration parameters', 'sys_frontend_config', 'Frontend configuration parameter type', now(), null),
+(2048602512692477952, 'Frontend configuration', 'sys_frontend_config', 'Frontend configuration parameter type', now(), null),
 (2048602512755392512, 'Task schedule type', 'task_strategy_type', 'Scheduled task strategy type', now(), null),
 (2048602512818307072, 'Task period type', 'task_period_type', 'Scheduled task period type', now(), null),
 (2048602512881221632, 'Notices and announcements', 'notice', 'Notification type', now(), null),

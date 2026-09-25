@@ -22,7 +22,7 @@ values
 (4, 'Login status', 'sys_login_status', 'User login status', now(), null),
 (5, 'Data rule operator', 'sys_data_rule_operator', 'Data permission rule operator', now(), null),
 (6, 'Data rule expression', 'sys_data_rule_expression', 'Data permission rule expression', now(), null),
-(7, 'Frontend configuration parameters', 'sys_frontend_config', 'Frontend configuration parameter type', now(), null),
+(7, 'Frontend configuration', 'sys_frontend_config', 'Frontend configuration parameter type', now(), null),
 (8, 'Task schedule type', 'task_strategy_type', 'Scheduled task strategy type', now(), null),
 (9, 'Task period type', 'task_period_type', 'Scheduled task period type', now(), null),
 (10, 'Notices and announcements', 'notice', 'Notification type', now(), null),
